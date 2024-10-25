@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useRef, useEffect } from 'react'
+import { useState, useRef, useEffect, useCallback, memo } from 'react'
 import { motion, AnimatePresence, Reorder } from 'framer-motion'
 import { Trash2, X, GripVertical, ArrowLeft, Lock, BarChart, Home, Dice5, Users, BarChart2, Send } from 'lucide-react'
 import { Input } from '@/components/ui/input'
@@ -70,6 +70,65 @@ const StatusBar = ({ gameState }: { gameState: GameState }) => (
     </div>
   </div>
 )
+
+// CharacterPageコンポーネントを関数の外に移動し、メモ化します
+const CharacterPage = memo(({ 
+  gameState, 
+  characterDialogue, 
+  characterResponse,
+  userMessage,
+  chatInput,
+  setChatInput,
+  handleChatSubmit 
+}: {
+  gameState: GameState
+  characterDialogue: string
+  characterResponse: string
+  userMessage: string
+  chatInput: string
+  setChatInput: (value: string) => void
+  handleChatSubmit: (e: React.FormEvent) => void
+}) => (
+  <div className="flex flex-col items-center justify-between h-full relative">
+    <StatusBar gameState={gameState} />
+    <div className="flex-grow flex flex-col items-center justify-center relative">
+      <div className="relative">
+        {(characterDialogue || characterResponse) && (
+          <div className="absolute bottom-full left-1/2 transform -translate-x-1/2 w-full bg-white border border-gray-200 rounded-lg p-4 shadow-lg animate-fade-in-out z-10 mb-2">
+            <p className="text-sm">{characterDialogue || characterResponse}</p>
+          </div>
+        )}
+        <img
+          src={gameState.currentCharacter.image}
+          alt={`${gameState.currentCharacter.name}キャラクター`}
+          className={`w-48 h-48 object-contain transition-transform ${characterDialogue || characterResponse ? 'animate-talking' : ''}`}
+        />
+      </div>
+    </div>
+    <div className="w-full mt-4">
+      {userMessage && (
+        <div className="mb-2 text-right">
+          <span className="inline-block p-2 rounded-lg bg-primary text-primary-foreground">
+            {userMessage}
+          </span>
+        </div>
+      )}
+      <form onSubmit={handleChatSubmit} className="flex flex-col space-y-2">
+        <Textarea
+          value={chatInput}
+          onChange={(e) => setChatInput(e.target.value)}
+          placeholder={`${gameState.currentCharacter.name}と会話する...`}
+          className="resize-none"
+          autoComplete="off"
+        />
+        <Button type="submit" className="w-full">
+          <Send className="w-4 h-4 mr-2" />
+          送信
+        </Button>
+      </form>
+    </div>
+  </div>
+));
 
 export function GameTodoAppComponent() {
   const [todos, setTodos] = useState<Todo[]>([])
@@ -200,19 +259,18 @@ export function GameTodoAppComponent() {
     setTimeout(() => setCharacterDialogue(''), 5000) // Hide dialogue after 5 seconds
   }
 
-  const handleChatSubmit = (e: React.FormEvent) => {
+  const handleChatSubmit = useCallback((e: React.FormEvent) => {
     e.preventDefault()
     if (chatInput.trim() !== '') {
       setUserMessage(chatInput)
       setChatInput('')
       
-      // Simple character response logic
       setTimeout(() => {
         const response = `${gameState.currentCharacter.name}です。${chatInput}ですね。一緒に頑張りましょう！`
         setCharacterResponse(response)
       }, 1000)
     }
-  }
+  }, [chatInput, gameState.currentCharacter.name])
 
   useEffect(() => {
     if (editInputRef.current) {
@@ -222,47 +280,6 @@ export function GameTodoAppComponent() {
 
   const activeTodos = todos.filter(todo => !todo.completed)
   const completedTodos = todos.filter(todo => todo.completed)
-
-  const CharacterPage = () => (
-    <div className="flex flex-col items-center justify-between h-full relative">
-      <StatusBar gameState={gameState} />
-      <div className="flex-grow flex flex-col items-center justify-center relative">
-        <div className="relative">
-          {(characterDialogue || characterResponse) && (
-            <div className="absolute bottom-full left-1/2 transform -translate-x-1/2 w-full bg-white border border-gray-200 rounded-lg p-4 shadow-lg animate-fade-in-out z-10 mb-2">
-              <p className="text-sm">{characterDialogue || characterResponse}</p>
-            </div>
-          )}
-          <img
-            src={gameState.currentCharacter.image}
-            alt={`${gameState.currentCharacter.name}キャラクター`}
-            className={`w-48 h-48 object-contain transition-transform ${characterDialogue || characterResponse ? 'animate-talking' : ''}`}
-          />
-        </div>
-      </div>
-      <div className="w-full mt-4">
-        {userMessage && (
-          <div className="mb-2 text-right">
-            <span className="inline-block p-2 rounded-lg bg-primary text-primary-foreground">
-              {userMessage}
-            </span>
-          </div>
-        )}
-        <form onSubmit={handleChatSubmit} className="flex flex-col space-y-2">
-          <Textarea
-            value={chatInput}
-            onChange={(e) => setChatInput(e.target.value)}
-            placeholder={`${gameState.currentCharacter.name}と会話する...`}
-            className="resize-none"
-          />
-          <Button type="submit" className="w-full">
-            <Send className="w-4 h-4 mr-2" />
-            送信
-          </Button>
-        </form>
-      </div>
-    </div>
-  )
 
   const GachaPage = () => (
     <div className="flex flex-col items-center justify-between h-full relative">
@@ -460,7 +477,17 @@ export function GameTodoAppComponent() {
     <div className="flex flex-col md:flex-row h-screen p-4 bg-background">
       <div className="w-full md:w-1/3 p-4 bg-card rounded-lg shadow-lg mb-4 md:mb-0 md:mr-4 flex flex-col overflow-hidden">
         <div className="flex-grow overflow-y-auto relative">
-          {currentPage === 'character' && <CharacterPage />}
+          {currentPage === 'character' && (
+            <CharacterPage
+              gameState={gameState}
+              characterDialogue={characterDialogue}
+              characterResponse={characterResponse}
+              userMessage={userMessage}
+              chatInput={chatInput}
+              setChatInput={setChatInput}
+              handleChatSubmit={handleChatSubmit}
+            />
+          )}
           {currentPage === 'gacha' && <GachaPage />}
           {currentPage === 'characterList' && <CharacterListPage />}
           {currentPage === 'report' && <ReportPage />}

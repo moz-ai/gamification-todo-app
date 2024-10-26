@@ -65,16 +65,16 @@ interface GameState {
 
 // 全キャラクターのリストを定義
 const allCharacters: Character[] = [
-  { id: 'chick', name: 'ひよこ', image: 'https://hebbkx1anhila5yf.public.blob.vercel-storage.com/hiyoko-LAa2txjE73zJAzn8vuEfJWPi42oqjt.png', description: 'かわいいひよこです。一生懸命頑張ります！' },
-  { id: 'bear', name: 'クマ', image: 'https://hebbkx1anhila5yf.public.blob.vercel-storage.com/bear-9V7pBjHsr9EZiDjJnHHUNv0RVD3lUM.png', description: 'のんびり屋のクマです。ゆっくり確実に物事を進めます。' },
-  { id: 'penguin', name: 'ペンギン', image: 'https://hebbkx1anhila5yf.public.blob.vercel-storage.com/penguin-zyCvOb6u87HttB4FwJKZnhpzihVoVG.png', description: '寒さに強いペンギンです。困難にも負けません！' },
-  { id: 'rabbit', name: 'ウサギ', image: 'https://hebbkx1anhila5yf.public.blob.vercel-storage.com/usaghi_dwarf-WqTIbfHXj7NQetJQ6cmtFdaFC3VqVY.png', description: '小さくてかわいいウサギです。素早く動き回ります！' },
-  { id: 'panther', name: 'パンサー', image: 'https://hebbkx1anhila5yf.public.blob.vercel-storage.com/hyou_black-BkLGdewFXGbvsfTrHZz3Ua9TcGJ8WF.png', description: '強くて勇敢なパンサーです。困難な課題も乗り越えます。' },
-  { id: 'seal', name: 'アザラシ', image: 'https://hebbkx1anhila5yf.public.blob.vercel-storage.com/gomafu_azarashi-x8DZmTe5FdAihq3LWOZerQe1Ga2kq6.png', description: 'のんびり屋のアザラシです。ストレスに強く、穏やかに過ごします。' },
-  { id: 'pomeranian', name: 'ポメラニアン', image: 'https://hebbkx1anhila5yf.public.blob.vercel-storage.com/pomeranian_white-wWMzTCtBaNyxXnaXUpUuOPK6mv0QFh.png', description: 'ふわふわで愛らしいポメラニアンです。元気いっぱいで、あなたを励まします！' },
-  { id: 'shimaenaga', name: 'シマエナガ', image: 'https://hebbkx1anhila5yf.public.blob.vercel-storage.com/bird_shimaenaga-K6LK5q9r1gBXhIW8jEPs2phdStAHHb.png', description: '可愛らしいシマエナガです。小さな体に大きな知恵を持っています。' },
-  { id: 'mike', name: 'ミケ', image: 'https://hebbkx1anhila5yf.public.blob.vercel-storage.com/cat_mike-6z1ieXpdH9ReaKLNcUNCVbaI61GGOu.png', description: '三毛猫のミケです。好奇心旺盛で、あなたの冒険を見守ります。' },
-  { id: 'shiba', name: '柴犬', image: 'https://hebbkx1anhila5yf.public.blob.vercel-storage.com/shibainu-WAsfRgrbDgUUqta6mLzjeUuOFwyH3T.png', description: '忠実で勇敢な柴犬です。困難な時もあなたと一緒に乗り越えます。' },
+  { id: 'chick', name: 'ひよこ', image: '/images/characters/chick.png', description: 'かわいいひよこです。一生懸命頑張ります！' },
+  { id: 'bear', name: 'クマ', image: '/images/characters/bear.png', description: 'のんびり屋のクマです。ゆっくり確実に物事を進めます。' },
+  { id: 'penguin', name: 'ペンギン', image: '/images/characters/penguin.png', description: '寒さに強いペンギンです。困難にも負けません！' },
+  { id: 'rabbit', name: 'ウサギ', image: '/images/characters/rabbit.png', description: '小さくてかわいいウサギです。素早く動き回ります！' },
+  { id: 'panther', name: 'パンサー', image: '/images/characters/panther.png', description: '強くて勇敢なパンサーです。困難な課題も乗り越えます。' },
+  { id: 'seal', name: 'アザラシ', image: '/images/characters/seal.png', description: 'のんびり屋のアザラシです。ストレスに強く、穏やかに過ごします。' },
+  { id: 'pomeranian', name: 'ポメラニアン', image: '/images/characters/pomeranian.png', description: 'ふわふわで愛らしいポメラニアンです。元気いっぱいで、あなたを励まします！' },
+  { id: 'shimaenaga', name: 'シマエナガ', image: '/images/characters/shimaenaga.png', description: '可愛らしいシマエナガです。小さな体に大きな知恵を持っています。' },
+  { id: 'mike', name: 'ミケ', image: '/images/characters/mike.png', description: '三毛猫のミケです。好奇心旺盛で、あなたの冒険を見守ります。' },
+  { id: 'shiba', name: '柴犬', image: '/images/characters/shiba.png', description: '忠実で勇敢な柴犬です。困難な時もあなたと一緒に乗り越えます。' },
 ]
 
 // 初期実績を定義

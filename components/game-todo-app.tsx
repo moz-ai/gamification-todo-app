@@ -219,16 +219,16 @@ const initialAchievements: Achievement[] = [
     name: 'コレクター見習い',
     description: '5体のキャラクターを集める',
     condition: (gameState: GameState) => gameState.characters.length >= 5,
-    reward: 50,
+    reward: 10,
     completed: false,
     claimed: false
   },
   {
-    id: 'character-collector-all',
-    name: 'マスターコレクター',
-    description: '全てのキャラクターを集める',
-    condition: (gameState: GameState) => gameState.characters.length >= allCharacters.length,
-    reward: 200,
+    id: 'character-collector-10',
+    name: 'ベテランコレクター',
+    description: '10体のキャラクターを集める',
+    condition: (gameState: GameState) => gameState.characters.length >= 10,
+    reward: 20,
     completed: false,
     claimed: false
   },
@@ -239,7 +239,7 @@ const initialAchievements: Achievement[] = [
     name: '初めてのガチャ',
     description: '初めてガチャを引く',
     condition: (gameState: GameState) => gameState.gachaCount >= 1,
-    reward: 10,
+    reward: 5,
     completed: false,
     claimed: false
   },
@@ -253,11 +253,11 @@ const initialAchievements: Achievement[] = [
     claimed: false
   },
   {
-    id: 'gacha-50',
+    id: 'gacha-30',
     name: 'ガチャの王',
-    description: 'ガチャを50回引く',
+    description: 'ガチャを30回引く',
     condition: (gameState: GameState) => gameState.gachaCount >= 50,
-    reward: 150,
+    reward: 100,
     completed: false,
     claimed: false
   }
@@ -282,7 +282,7 @@ const Modal = ({ isOpen, onClose, children }: { isOpen: boolean; onClose: () => 
   );
 };
 
-// ステータスバーコンポーネントの
+// ステータスバーコンポーネントの定義
 const StatusBar = ({ gameState }: { gameState: GameState }) => (
   <div className="w-full flex justify-between items-center mb-4">
     <div className="w-16 h-16 relative">

@@ -14,7 +14,7 @@ import { CircularProgressbar, buildStyles } from 'react-circular-progressbar';
 import 'react-circular-progressbar/dist/styles.css';
 import { generateCharacterResponse } from '@/app/gemini'
 import ReactConfetti from 'react-confetti'
-import { useWindowSize } from 'react-use' // react-useもインストールが必要です
+import { useWindowSize } from 'react-use'
 
 // Todoの型を定義
 interface Todo {
@@ -741,7 +741,7 @@ export default function GameTodoApp() {
       gachaCount: prev.gachaCount + 1
     }));
 
-    // ランダムに新しいキャラク��ーを選ぶ
+    // ランダムに新しいキャラクターを選ぶ
     const newCharacter = allCharacters[Math.floor(Math.random() * allCharacters.length)];
     // ゲーム状態を更新して新しいキャラクターを追加
     setGameState(prev => ({

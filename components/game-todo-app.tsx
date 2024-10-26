@@ -13,6 +13,8 @@ import { Label } from '@/components/ui/label'
 import { CircularProgressbar, buildStyles } from 'react-circular-progressbar';
 import 'react-circular-progressbar/dist/styles.css';
 import { generateCharacterResponse } from '@/app/gemini'
+import ReactConfetti from 'react-confetti'
+import { useWindowSize } from 'react-use' // react-useもインストールが必要です
 
 // Todoの型を定義
 interface Todo {
@@ -482,6 +484,8 @@ export default function GameTodoApp() {
   const [userMessage, setUserMessage] = useState('')
   const [isAnimating, setIsAnimating] = useState(false);
   const isComposingRef = useRef(false);
+  const [showConfetti, setShowConfetti] = useState(false)
+  const { width, height } = useWindowSize()
 
   // アニメーションを開始する関数
   const startAnimation = () => {
@@ -509,7 +513,11 @@ export default function GameTodoApp() {
           addGachaStone(1)
           updateCompletedTasks(1)
           showCharacterMessage('タスク完了！\nよくがんばったね！')
-          startAnimation();
+          startAnimation()
+          // 紙吹雪エフェクトを開始
+          setShowConfetti(true)
+          // 3秒後に紙吹雪を停止
+          setTimeout(() => setShowConfetti(false), 3000)
           return { ...todo, completed: newCompleted, hasAwardedExp: true, completedAt: new Date() }
         }
         return { ...todo, completed: newCompleted }
@@ -945,6 +953,17 @@ export default function GameTodoApp() {
   // アプリのUIをレンダリング
   return (
     <div className="flex flex-col md:flex-row h-screen p-4 bg-background">
+      {showConfetti && (
+        <ReactConfetti
+          width={width}
+          height={height}
+          recycle={false}
+          numberOfPieces={200}
+          gravity={0.3}
+          initialVelocityY={20}
+          colors={['#FFD700', '#FF6B6B', '#4ECDC4', '#45B7D1', '#96CEB4']}
+        />
+      )}
       <div className="w-full md:w-1/3 p-4 bg-card rounded-lg shadow-lg mb-4 md:mb-0 md:mr-4 flex flex-col h-[calc(100vh-32px)]">
         <div className="flex-grow overflow-hidden relative mb-4">
           {currentPage === 'character' && (

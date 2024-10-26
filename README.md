@@ -1,36 +1,76 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# ゲーミフィケーションTODOアプリ 🎮✨
 
-## Getting Started
+タスク管理をゲーム感覚で楽しく！AIキャラクターと一緒に成長するTODOアプリです。
 
-First, run the development server:
+## 🌟 主な特徴
 
+### 1. AIキャラクターとの対話機能
+- タスク管理をサポートする個性豊かなAIキャラクター
+- キャラクターごとに異なる性格と応援メッセージ
+- 自然な会話でモチベーション維持をサポート
+
+### 2. ゲーミフィケーション要素
+- タスク完了で経験値とガチャ石を獲得
+- レベルアップシステム
+- ガチャによる新キャラクター解放
+- 実績システムで目標達成を可視化
+
+### 3. モチベーション管理
+- 視覚的な進捗表示
+- 連続達成日数のトラッキング
+- 実績解除による報酬システム
+- タスク完了時の演出効果
+
+## 💻 技術スタック
+
+- **フロントエンド**: Next.js, TypeScript, TailwindCSS
+- **状態管理**: React Hooks
+- **アニメーション**: Framer Motion
+- **AI対話**: Google Gemini API
+- **UI/UXライブラリ**: Lucide Icons, React Circular Progressbar
+
+## 🚀 セットアップ方法
+
+1. リポジトリのクローン:
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+git clone https://github.com/moz-ai/gamification-todo-app.git
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+2. 依存関係のインストール:
+```bash
+npm install
+```
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+3. 環境変数の設定:
+`.env.local`ファイルを作成し、必要な環境変数を設定:
+```
+GOOGLE_API_KEY=your_gemini_api_key
+```
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+4. 開発サーバーの起動:
+```bash
+npm run dev
+```
 
-## Learn More
+## 🎯 開発のポイント
 
-To learn more about Next.js, take a look at the following resources:
+1. **ユーザーエンゲージメント**
+   - ゲーミフィケーションによるタスク管理の習慣化
+   - 視覚的フィードバックによるモチベーション維持
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+2. **AI活用**
+   - キャラクターの個性を活かした自然な対話
+   - ユーザーの状況に応じた適切な応援メッセージ
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+3. **UX/UI設計**
+   - 直感的な操作性
+   - スムーズなアニメーション
+   - レスポンシブデザイン
 
-## Deploy on Vercel
+4. **拡張性**
+   - 新キャラクターの追加が容易
+   - 実績システムの拡張が可能
+   - カスタマイズ可能なUI
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+---
+Developed for CursorSunHackathon vol.1 2024 🏆

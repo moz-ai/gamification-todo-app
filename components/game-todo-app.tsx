@@ -14,9 +14,6 @@ import { CircularProgressbar, buildStyles } from 'react-circular-progressbar';
 import 'react-circular-progressbar/dist/styles.css';
 import { generateCharacterResponse } from '@/app/gemini'
 
-// モデルを作成
-// const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash-002" });
-
 // Todoの型を定義
 interface Todo {
   id: number

@@ -85,7 +85,7 @@ const initialAchievements: Achievement[] = [
   {
     id: 'task-master-10',
     name: 'タスクマスター初級',
-    description: '10��のタスクを完了する',
+    description: '10個のタスクを完了する',
     condition: (gameState: GameState) => gameState.completedTasks >= 10,
     reward: 20,
     completed: false,

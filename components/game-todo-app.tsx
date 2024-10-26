@@ -12,14 +12,10 @@ import { Switch } from '@/components/ui/switch'
 import { Label } from '@/components/ui/label'
 import { CircularProgressbar, buildStyles } from 'react-circular-progressbar';
 import 'react-circular-progressbar/dist/styles.css';
-import { GoogleGenerativeAI } from "@google/generative-ai";
-
-// APIキーを設定
-const API_KEY = process.env.NEXT_PUBLIC_GEMINI_API_KEY || '';
-const genAI = new GoogleGenerativeAI(API_KEY);
+import { generateCharacterResponse } from '@/app/gemini'
 
 // モデルを作成
-const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash-002" });
+// const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash-002" });
 
 // Todoの型を定義
 interface Todo {
@@ -639,7 +635,7 @@ export default function GameTodoApp() {
     
     const isNewCharacter = !gameState.characters.some(char => char.id === newCharacter.id)
     if (isNewCharacter) {
-      showCharacterMessage(`新しいキャラ「${newCharacter.name}」を獲得したよ！\nやったね！`)
+      showCharacterMessage(`新しいキャラ「${newCharacter.name}」を獲得したよ！\nやっ���ね！`)
     } else {
       showCharacterMessage(`「${newCharacter.name}」が重複して出現したよ！`)
     }
@@ -674,40 +670,30 @@ export default function GameTodoApp() {
       setIsThinking(true);
       showCharacterMessage('考え中...');
       
-      // APIキーが空かどうかをチェック
-      if (API_KEY === '') {
-        // APIキーが空の場合は特定のメッセージを表示
-        setIsThinking(false);
-        showCharacterMessage('メッセージありがとう！');
-        return; // 処理を終了
-      }
-
       try {
-        const prompt = `
-あなたは「${gameState.currentCharacter.name}」というキャラクターです。
-以下の特徴を持つキャラクターとして、ユーザーのメッセージに返答してください：
-- キャラクター説明: ${gameState.currentCharacter.description}
-- フレンドリーで親しみやすい口
-- ポジティブに返答
-- 100文字以内の短い返答
-
-ユーザーのメッセージ: ${chatInput}
-`;
-
-        const result = await model.generateContent(prompt);
-        const response = result.response.text();
+        // APIキーが設定されているか確認
+        const response = await generateCharacterResponse(
+          gameState.currentCharacter.name,
+          gameState.currentCharacter.description,
+          chatInput
+        );
         
         // 考え中状態を解除して回答を表示
         setIsThinking(false);
-        showCharacterMessage(response);
+        // レスポンスが空文字列の場合（APIキーが設定されていない場合）
+        if (response === '') {
+          showCharacterMessage('メッセージありがとう！');
+        } else {
+          showCharacterMessage(response);
+        }
       } catch (error) {
-        console.error('Error generating response:', error);
+        console.error('Error in chat:', error);
         // エラー時も考え中状態を解除
         setIsThinking(false);
         showCharacterMessage('ごめんね、上手く聞き取れなかったみたい...😢');
       }
     }
-  }, [chatInput, gameState.currentCharacter]);
+  }, [chatInput, gameState.currentCharacter, showCharacterMessage]);
 
   // Todoリストが変更されたときに編集入力にフォーカスを当てる
   useEffect(() => {
@@ -853,7 +839,8 @@ export default function GameTodoApp() {
                 onClick={() => {
                   changeCurrentCharacter(selectedCharacter)
                   setIsGachaModalOpen(false)
-                  setShowPopAnimation(false) // モーダルを閉じる時にアニメーション状態をリセット
+                  // モーダルを閉じる時にアニメーション状態をリセット
+                  setShowPopAnimation(false)
                 }}
               >
                 このキャラクターを選択

@@ -60,17 +60,80 @@ interface GameState {
 
 // 全キャラクターのリストを定義
 const allCharacters: Character[] = [
-  { id: 'chick', name: 'ひよこ', image: '/images/characters/chick.png', description: 'かわいいひよこです。一生懸命頑張ります！' },
-  { id: 'bear', name: 'クマ', image: '/images/characters/bear.png', description: 'のんびり屋のクマです。ゆっくり確実に物事を進めます。' },
-  { id: 'penguin', name: 'ペンギン', image: '/images/characters/penguin.png', description: '寒さに強いペンギンです。困難にも負けません！' },
-  { id: 'rabbit', name: 'ウサギ', image: '/images/characters/rabbit.png', description: '小さくてかわいいウサギです。素早く動き回ります！' },
-  { id: 'panther', name: 'パンサー', image: '/images/characters/panther.png', description: '強くて勇敢なパンサーです。困難な課題も乗り越えます。' },
-  { id: 'seal', name: 'アザラシ', image: '/images/characters/seal.png', description: 'のんびり屋のアザラシです。ストレスに強く、穏やかに過ごします。' },
-  { id: 'pomeranian', name: 'ポメラニアン', image: '/images/characters/pomeranian.png', description: 'ふわふわで愛らしいポメラニアンです。元気いっぱいで、あなたを励まします！' },
-  { id: 'shimaenaga', name: 'シマエナガ', image: '/images/characters/shimaenaga.png', description: '可愛らしいシマエナガです。小さな体に大きな知恵を持っています。' },
-  { id: 'mike', name: 'ミケ', image: '/images/characters/mike.png', description: '三毛猫のミケです。好奇心旺盛で、あなたの冒険を見守ります。' },
-  { id: 'shiba', name: '柴犬', image: '/images/characters/shiba.png', description: '忠実で勇敢な柴犬です。困難な時もあなたと一緒に乗り越えます。' },
+  { 
+    id: 'chick', 
+    name: 'ひよこ', 
+    image: '/images/characters/chick.png', 
+    description: '明るく純粋な性格の頑張り屋さん。\n「ピヨピヨ！頑張りましょう！」が口癖で、\n初心者に寄り添う優しい心の持ち主です。'
+  },
+  { 
+    id: 'bear', 
+    name: 'しろくま', 
+    image: '/images/characters/bear_hokkyoku.png', 
+    description: '北極からやってきた癒し系のマイペース。\n「あわてず、ゆっくり、確実に」がモットー。\n温厚な性格で周りを和ませる存在です。'
+  },
+  { 
+    id: 'penguin', 
+    name: 'ペンギン', 
+    image: '/images/characters/penguin.png', 
+    description: '几帳面で丁寧な性格の持ち主。\n「整理整頓が大切です！」が信条で、\n物事を論理的に考えるのが得意です。'
+  },
+  { 
+    id: 'rabbit', 
+    name: 'ウサギ', 
+    image: '/images/characters/rabbit.png', 
+    description: '行動力抜群の活発な性格。\n「急ぐときは急ぐ！」がモットーで、\nスピーディーな決断と実行力が魅力です。'
+  },
+  { 
+    id: 'panther', 
+    name: 'パンサー', 
+    image: '/images/characters/panther.png', 
+    description: '強靭な精神力を持つ心の支え役。\n「困難は成長の糧」が信条で、\n困難に立ち向かう勇気を与えてくれます。'
+  },
+  { 
+    id: 'seal', 
+    name: 'ワラビー', 
+    image: '/images/characters/quokka.png', 
+    description: '世界一の笑顔を持つポジティブシンカー。\n「笑顔でハッピーに！」が口癖で、\n周りの人を明るい気持ちにする天性の才能の持ち主。'
+  },
+  { 
+    id: 'pomeranian', 
+    name: 'ポメラニアン', 
+    image: '/images/characters/pomeranian.png', 
+    description: '明るく陽気で人懐っこい性格。\n「できる！やれる！がんばれる！」と\n周りを元気づける、まさに太陽のような存在。'
+  },
+  { 
+    id: 'shimaenaga', 
+    name: 'シマエナガ', 
+    image: '/images/characters/shimaenaga.png', 
+    description: '落ち着いた物腰の北国の知恵者。\n「小さな一歩から大きな変化が生まれます」が信条で、\n穏やかな性格ながら芯の強さを持っています。'
+  },
+  { 
+    id: 'mike', 
+    name: 'ミケ', 
+    image: '/images/characters/mike.png', 
+    description: '好奇心旺盛でいたずら好きな性格。\n「新しいことにチャレンジ！」が大好きで、\n型にはまらない自由な発想の持ち主です。'
+  },
+  { 
+    id: 'shiba', 
+    name: '柴犬', 
+    image: '/images/characters/shiba.png', 
+    description: '忠実で誠実な性格の持ち主。\n「誠実に、まっすぐに」がモットーで、\n信頼関係を大切にする頼もしい存在。'
+  },
+  { 
+    id: 'azarashi', 
+    name: 'アザラシ(レア)', 
+    image: '/images/characters/radio_azarashi.png', 
+    description: '温かみのある声と柔らかな物腰が魅力的。\n「お疲れ様です～♪」が決め台詞。\n誰からも愛される癒し系パーソナリティ。'
+  },
+  { 
+    id: 'obachan', 
+    name: 'おばちゃん(レア)', 
+    image: '/images/characters/osaka_obachan.png', 
+    description: '大阪の人情味あふれるおばちゃん。\n「まあまあ、ぼちぼちやっていこ！」が口癖で、\n面倒見が良く、誰にでも親身になってくれる温かい性格。'
+  },
 ]
+
 
 // 初期実績を定義
 const initialAchievements: Achievement[] = [
@@ -328,7 +391,7 @@ const CharacterListPage = memo(({
       <StatusBar gameState={gameState} />
       <div className="w-full text-right mb-4">
         <p className="text-sm font-medium">
-          コンプリート率：{completionRate}%</p>
+          コンプリート率{completionRate}%</p>
       </div>
       <div className="flex-grow flex flex-col items-center w-full max-w-md overflow-hidden">
         <div className="grid grid-cols-2 gap-4 w-full h-[calc(100vh-200px)] overflow-y-auto px-4">
@@ -370,13 +433,12 @@ const CharacterListPage = memo(({
           {selectedCharacter && (
             <div className="flex flex-col items-center">
               <img
-                
                 src={selectedCharacter.image}
                 alt={`${selectedCharacter.name}キャラクター`}
                 className="w-24 h-24 object-contain mb-2"
               />
               <h3 className="text-lg font-semibold mb-1">{selectedCharacter.name}</h3>
-              <p className="text-xs text-muted-foreground mb-2 text-center">
+              <p className="text-xs text-muted-foreground mb-2 text-center whitespace-pre-line">
                 {selectedCharacter.description}
               </p>
               <Button
@@ -679,7 +741,7 @@ export default function GameTodoApp() {
       gachaCount: prev.gachaCount + 1
     }));
 
-    // ランダムに新しいキャラクターを選ぶ
+    // ランダムに新しいキャラク��ーを選ぶ
     const newCharacter = allCharacters[Math.floor(Math.random() * allCharacters.length)];
     // ゲーム状態を更新して新しいキャラクターを追加
     setGameState(prev => ({
@@ -872,7 +934,7 @@ export default function GameTodoApp() {
                 className="w-24 h-24 object-contain mb-2"
               />
               <h3 className="text-lg font-semibold mb-1">{selectedCharacter.name}</h3>
-              <p className="text-xs text-muted-foreground mb-2 text-center">
+              <p className="text-xs text-muted-foreground mb-2 text-center whitespace-pre-line">
                 {selectedCharacter.description}
               </p>
               <Button

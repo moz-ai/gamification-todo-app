@@ -15,6 +15,7 @@ import 'react-circular-progressbar/dist/styles.css';
 import { generateCharacterResponse } from '@/app/gemini'
 import ReactConfetti from 'react-confetti'
 import { useWindowSize } from 'react-use'
+import Image from 'next/image'
 
 // Todoの型を定義
 interface Todo {
@@ -281,6 +282,7 @@ const Modal = ({ isOpen, onClose, children }: { isOpen: boolean; onClose: () => 
     </div>
   );
 };
+Modal.displayName = 'Modal';
 
 // ステータスバーコンポーネントの定義
 const StatusBar = ({ gameState }: { gameState: GameState }) => (
@@ -327,10 +329,12 @@ const CharacterPage = memo(({
   <StatusBar gameState={gameState} />
   <div className="flex-grow relative">
     <div className="absolute inset-0 flex items-center justify-center">
-      <img
+      <Image
         src={gameState.currentCharacter.image}
         alt={`${gameState.currentCharacter.name}キャラクター`}
-        className={`w-48 h-48 object-contain ${isAnimating ? 'animate-talking' : ''}`}
+        width={192}
+        height={192}
+        className={`object-contain ${isAnimating ? 'animate-talking' : ''}`}
       />
     </div>
     {characterMessage && (
@@ -366,6 +370,7 @@ const CharacterPage = memo(({
   </div>
 </div>
 ));
+CharacterPage.displayName = 'CharacterPage';
 
 // キャラクターリストページコンポーネントを定義
 const CharacterListPage = memo(({ 
@@ -410,9 +415,11 @@ const CharacterListPage = memo(({
               >
                 <div className="relative w-24 h-24 mb-2">
                   {isOwned ? (
-                    <img
+                    <Image
                       src={character.image}
                       alt={character.name}
+                      width={96}
+                      height={96}
                       className="w-full h-full object-contain"
                     />
                   ) : (
@@ -432,9 +439,11 @@ const CharacterListPage = memo(({
       <Modal isOpen={isCharacterDetailModalOpen} onClose={() => setIsCharacterDetailModalOpen(false)}>
           {selectedCharacter && (
             <div className="flex flex-col items-center">
-              <img
+              <Image
                 src={selectedCharacter.image}
                 alt={`${selectedCharacter.name}キャラクター`}
+                width={96}
+                height={96}
                 className="w-24 h-24 object-contain mb-2"
               />
               <h3 className="text-lg font-semibold mb-1">{selectedCharacter.name}</h3>
@@ -529,7 +538,7 @@ export default function GameTodoApp() {
     expToNextLevel: 100,
     characters: [allCharacters[0]],
     currentCharacter: allCharacters[0],
-    gachaStones: 1000,
+    gachaStones: 0,
     completedTasks: 0,
     achievements: initialAchievements,
     gachaCount: 0,
@@ -786,10 +795,10 @@ export default function GameTodoApp() {
   };
 
   // キャラクターのメッセージを表示する関数
-  const showCharacterMessage = (message: string) => {
+  const showCharacterMessage = useCallback((message: string) => {
     setCharacterMessage(message);
     startAnimation();
-  };
+  }, []);
 
   // チャットの送信を処理する関数
   const handleChatSubmit = useCallback(async (e: React.FormEvent) => {
@@ -928,9 +937,11 @@ export default function GameTodoApp() {
         <Modal isOpen={isGachaModalOpen} onClose={() => setIsGachaModalOpen(false)}>
           {selectedCharacter && (
             <div className={`flex flex-col items-center ${showPopAnimation ? 'animate-pop-in' : ''}`}>
-              <img
+              <Image
                 src={selectedCharacter.image}
                 alt={`${selectedCharacter.name}キャラクター`}
+                width={96}
+                height={96}
                 className="w-24 h-24 object-contain mb-2"
               />
               <h3 className="text-lg font-semibold mb-1">{selectedCharacter.name}</h3>

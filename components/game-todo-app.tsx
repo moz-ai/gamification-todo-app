@@ -720,50 +720,150 @@ export default function GameTodoApp() {
   const activeTodos = todos.filter(todo => !todo.completed)
   const completedTodos = todos.filter(todo => todo.completed)
 
-  // ガチャページコンポーネントを定義
-  const GachaPage = ({ gameState }: { gameState: GameState }) => (
-    <div className="flex flex-col items-center justify-between h-full relative px-4">
-      <StatusBar gameState={gameState} />
-      <div className="flex-grow flex flex-col items-center justify-center">
-        <img
-          src="https://hebbkx1anhila5yf.public.blob.vercel-storage.com/gachagacha-pglDW7R9gGcH655XURp0iM0pMM856G.png"
-          alt="ガチャガチャマシン"
-          className="w-64 h-64 object-contain mb-4"
-        />
-        <Button
-          className="w-full max-w-xs"
-          onClick={performGacha}
-          disabled={gameState.gachaStones < 5}
-        >
-          ガチャを引く (💎5)
-        </Button>
+  // スタイルを追加するためのエフェクトを更新
+  useEffect(() => {
+    const style = document.createElement('style');
+    const animations = `
+      @keyframes fadeInOut {
+        0%, 100% { opacity: 0; transform: translateY(10px); }
+        5%, 95% { opacity: 1; transform: translateY(0); }
+      }
+      @keyframes talking {
+        0%, 100% { transform: scale(1); }
+        50% { transform: scale(1.05); }
+      }
+      @keyframes shake {
+        0%, 100% { transform: translateY(0); }
+        25% { transform: translateY(-10px); }
+        75% { transform: translateY(10px); }
+      }
+      @keyframes popIn {
+        0% { transform: scale(0); opacity: 0; }
+        70% { transform: scale(1.2); opacity: 0.8; }
+        100% { transform: scale(1); opacity: 1; }
+      }
+      @keyframes sparkle {
+        0%, 100% { opacity: 0; }
+        50% { opacity: 1; }
+      }
+    `;
+    style.innerHTML = animations + `
+      .animate-talking {
+        animation: talking 0.5s ease-in-out infinite;
+      }
+      .animate-shake {
+        animation: shake 0.3s ease-in-out infinite;
+      }
+      .animate-pop-in {
+        animation: popIn 0.5s ease-out forwards;
+      }
+      .sparkle {
+        position: absolute;
+        width: 10px;
+        height: 10px;
+        background: gold;
+        border-radius: 50%;
+        animation: sparkle 0.5s ease-in-out infinite;
+      }
+    `;
+    document.head.appendChild(style);
+    return () => {
+      document.head.removeChild(style);
+    };
+  }, []);
+
+  // ガチャページコンポーネントを更新
+  const GachaPage = ({ gameState }: { gameState: GameState }) => {
+    const [isShaking, setIsShaking] = useState(false);
+    const [showSparkles, setShowSparkles] = useState(false);
+    const [showPopAnimation, setShowPopAnimation] = useState(false);
+
+    // ガチャを引く処理を更新
+    const handleGacha = async () => {
+      if (gameState.gachaStones < 5) {
+        showCharacterMessage('💎が足りないみたい...\nタスクに取り組もう！');
+        return;
+      }
+
+      setShowPopAnimation(false); // アニメーションをリセット
+      setIsShaking(true);
+      
+      await new Promise(resolve => setTimeout(resolve, 2000));
+      
+      setIsShaking(false);
+      setShowSparkles(true);
+      
+      performGacha();
+      setShowPopAnimation(true); // 新しいキャラクター表示時にアニメーションを有効化
+      
+      setTimeout(() => {
+        setShowSparkles(false);
+      }, 1000);
+    };
+
+    return (
+      <div className="flex flex-col items-center justify-between h-full relative px-4">
+        <StatusBar gameState={gameState} />
+        <div className="flex-grow flex flex-col items-center justify-center relative">
+          {/* キラキラエフェクト */}
+          {showSparkles && (
+            <>
+              {[...Array(10)].map((_, i) => (
+                <div
+                  key={i}
+                  className="sparkle"
+                  style={{
+                    left: `${Math.random() * 100}%`,
+                    top: `${Math.random() * 100}%`,
+                    animationDelay: `${Math.random() * 0.5}s`
+                  }}
+                />
+              ))}
+            </>
+          )}
+          <img
+            src="images/gacha/gachagacha.png"
+            alt="ガチャガチャマシン"
+            className={`w-64 h-64 object-contain mb-4 transition-all duration-300 ${
+              isShaking ? 'animate-shake' : ''
+            }`}
+          />
+          <Button
+            className="w-full max-w-xs"
+            onClick={handleGacha}
+            disabled={gameState.gachaStones < 5 || isShaking}
+          >
+            {isShaking ? 'ガチャ実行中...' : 'ガチャを引く (💎5)'}
+          </Button>
+        </div>
+        <Modal isOpen={isGachaModalOpen} onClose={() => setIsGachaModalOpen(false)}>
+          {selectedCharacter && (
+            <div className={`flex flex-col items-center ${showPopAnimation ? 'animate-pop-in' : ''}`}>
+              <img
+                src={selectedCharacter.image}
+                alt={`${selectedCharacter.name}キャラクター`}
+                className="w-24 h-24 object-contain mb-2"
+              />
+              <h3 className="text-lg font-semibold mb-1">{selectedCharacter.name}</h3>
+              <p className="text-xs text-muted-foreground mb-2 text-center">
+                {selectedCharacter.description}
+              </p>
+              <Button
+                className="w-full"
+                onClick={() => {
+                  changeCurrentCharacter(selectedCharacter)
+                  setIsGachaModalOpen(false)
+                  setShowPopAnimation(false) // モーダルを閉じる時にアニメーション状態をリセット
+                }}
+              >
+                このキャラクターを選択
+              </Button>
+            </div>
+          )}
+        </Modal>
       </div>
-      <Modal isOpen={isGachaModalOpen} onClose={() => setIsGachaModalOpen(false)}>
-        {selectedCharacter && (
-          <div className="flex flex-col items-center">
-            <img
-              src={selectedCharacter.image}
-              alt={`${selectedCharacter.name}キャラクター`}
-              className="w-24 h-24 object-contain mb-2"
-            />
-            <h3 className="text-lg font-semibold mb-1">{selectedCharacter.name}</h3>
-            <p className="text-xs text-muted-foreground mb-2 text-center">
-              {selectedCharacter.description}
-            </p>
-            <Button
-              className="w-full"
-              onClick={() => {
-                changeCurrentCharacter(selectedCharacter)
-                setIsGachaModalOpen(false)
-              }}
-            >
-              このキャラクターを選択
-            </Button>
-          </div>
-        )}
-      </Modal>
-    </div>
-  )
+    );
+  };
 
   // レポートページコンポーネントを定義
   const ReportPage = ({ gameState, completedTodos }: { gameState: GameState, completedTodos: Todo[] }) => {
@@ -851,30 +951,6 @@ export default function GameTodoApp() {
       ))}
     </div>
   )
-
-  // スタイルを追加するためのエフェクト
-  useEffect(() => {
-    const style = document.createElement('style');
-    const fadeInOutKeyframes = `
-      @keyframes fadeInOut {
-                0%, 100% { opacity: 0; transform: translateY(10px); }
-        5%, 95% { opacity: 1; transform: translateY(0); }
-      }
-      @keyframes talking {
-        0%, 100% { transform: scale(1); }
-        50% { transform: scale(1.05); }
-      }
-    `;
-    style.innerHTML = fadeInOutKeyframes + `
-      .animate-talking {
-        animation: talking 0.5s ease-in-out infinite;
-      }
-    `;
-    document.head.appendChild(style);
-    return () => {
-      document.head.removeChild(style);
-    };
-  }, []);
 
   // アニメーションを開始するエフェクト
   useEffect(() => {

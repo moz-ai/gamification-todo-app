@@ -1,5 +1,7 @@
+// 'use client'を宣言して、クライアントサイドでのレンダリングを有効にする
 'use client'
 
+// 必要なReactフックとライブラリをインポート
 import { useState, useRef, useEffect, useCallback, memo } from 'react'
 import { motion, AnimatePresence, Reorder } from 'framer-motion'
 import { Trash2, X, GripVertical, ArrowLeft, Lock, BarChart, Home, Dice5, Users, BarChart2, Send, Trophy } from 'lucide-react'
@@ -11,7 +13,13 @@ import { Label } from '@/components/ui/label'
 import { Textarea } from '@/components/ui/textarea'
 import { CircularProgressbar, buildStyles } from 'react-circular-progressbar';
 import 'react-circular-progressbar/dist/styles.css';
+import { GoogleGenerativeAI } from "@google/generative-ai";
 
+// API関連の定数を追加
+const API_KEY = process.env.NEXT_PUBLIC_GEMINI_API_KEY;
+const genAI = new GoogleGenerativeAI(API_KEY as string);
+
+// Todoの型を定義
 interface Todo {
   id: number
   text: string
@@ -21,6 +29,7 @@ interface Todo {
   completedAt?: Date
 }
 
+// キャラクターの型を定義
 interface Character {
   id: string
   name: string
@@ -28,6 +37,7 @@ interface Character {
   description: string
 }
 
+// 実績の型を定義
 interface Achievement {
   id: string
   name: string
@@ -38,6 +48,7 @@ interface Achievement {
   claimed: boolean
 }
 
+// ゲームの状態を定義
 interface GameState {
   level: number
   exp: number
@@ -50,6 +61,7 @@ interface GameState {
   gachaCount: number
 }
 
+// 全キャラクターのリストを定義
 const allCharacters: Character[] = [
   { id: 'chick', name: 'ひよこ', image: 'https://hebbkx1anhila5yf.public.blob.vercel-storage.com/hiyoko-LAa2txjE73zJAzn8vuEfJWPi42oqjt.png', description: 'かわいいひよこです。一生懸命頑張ります！' },
   { id: 'bear', name: 'クマ', image: 'https://hebbkx1anhila5yf.public.blob.vercel-storage.com/bear-9V7pBjHsr9EZiDjJnHHUNv0RVD3lUM.png', description: 'のんびり屋のクマです。ゆっくり確実に物事を進めます。' },
@@ -63,6 +75,7 @@ const allCharacters: Character[] = [
   { id: 'shiba', name: '柴犬', image: 'https://hebbkx1anhila5yf.public.blob.vercel-storage.com/shibainu-WAsfRgrbDgUUqta6mLzjeUuOFwyH3T.png', description: '忠実で勇敢な柴犬です。困難な時もあなたと一緒に乗り越えます。' },
 ]
 
+// 初期実績を定義
 const initialAchievements: Achievement[] = [
   // タスク完了数関連
   {
@@ -190,6 +203,7 @@ const initialAchievements: Achievement[] = [
   }
 ]
 
+// モーダルコンポーネントを定義
 const Modal = ({ isOpen, onClose, children }: { isOpen: boolean; onClose: () => void; children: React.ReactNode }) => {
   if (!isOpen) return null;
 
@@ -208,6 +222,7 @@ const Modal = ({ isOpen, onClose, children }: { isOpen: boolean; onClose: () => 
   );
 };
 
+// ステータスバーコンポーネントを定義
 const StatusBar = ({ gameState }: { gameState: GameState }) => (
   <div className="w-full flex justify-between items-center mb-4">
     <div className="w-16 h-16 relative">
@@ -230,6 +245,7 @@ const StatusBar = ({ gameState }: { gameState: GameState }) => (
   </div>
 )
 
+// キャラクターページコンポーネントを定義
 const CharacterPage = memo(({ 
   gameState, 
   characterMessage,
@@ -291,6 +307,7 @@ const CharacterPage = memo(({
 </div>
 ));
 
+// キャラクターリストページコンポーネントを定義
 const CharacterListPage = memo(({ 
   gameState, 
   selectedCharacter,
@@ -306,6 +323,7 @@ const CharacterListPage = memo(({
   setIsCharacterDetailModalOpen: (isOpen: boolean) => void
   changeCurrentCharacter: (character: Character) => void
 }) => {
+  // コンプリート率を計算
   const completionRate = calculateCompletionRate(gameState.characters, allCharacters);
   
   return (
@@ -382,11 +400,13 @@ const CharacterListPage = memo(({
   );
 });
 
+// 所有キャラクターのコンプリート率を計算する関数
 const calculateCompletionRate = (ownedCharacters: Character[], totalCharacters: Character[]) => {
   const uniqueOwnedCharacters = new Set(ownedCharacters.map(char => char.id));
   return Math.round((uniqueOwnedCharacters.size / totalCharacters.length) * 100);
 };
 
+// 実績ページコンポーネントを定義
 const AchievementsPage = memo(({ gameState, claimAchievement }: { gameState: GameState; claimAchievement: (achievementId: string) => void }) => {
   // 未受取の実績数を計算
   const unclaimedCount = gameState.achievements.filter(
@@ -439,18 +459,19 @@ const AchievementsPage = memo(({ gameState, claimAchievement }: { gameState: Gam
   );
 });
 
+// ランダムなウェルカムメッセージを取得する関数
 const getRandomWelcomeMessage = () => {
   const messages = [
-    "やあ！\n今日も一緒に頑張ろう！",
-    "こんにちは！\n今日はどんなタスクに挑戦する？",
-    "よく来たね！\n一緒に素晴らしい1日にしよう！",
-    "お帰りなさい！\n今日も頑張ろうね！",
-    "やあ、元気？\n今日も一緒にタスクをこなそう！"
+    "今日も一緒に頑張ろう！",
+    "今日はどんなタスクに挑戦する？",
+    "一緒に素晴らしい1日にしよう！",
   ];
   return messages[Math.floor(Math.random() * messages.length)];
 };
 
+// ゲームTodoアプリのメインコンポーネントを定義
 export default function GameTodoApp() {
+  // ステートを定義
   const [todos, setTodos] = useState<Todo[]>([])
   const [newTodo, setNewTodo] = useState('')
   const [gameState, setGameState] = useState<GameState>({
@@ -467,19 +488,22 @@ export default function GameTodoApp() {
   const [showCompleted, setShowCompleted] = useState(false)
   const [currentPage, setCurrentPage] = useState<'character' | 'gacha' | 'characterList' | 'report' | 'achievements'>('character')
   const [selectedCharacter, setSelectedCharacter] = useState<Character | null>(null)
-  const [characterMessage, setCharacterMessage] = useState(getRandomWelcomeMessage())
+  const [characterMessage, setCharacterMessage] = useState("今日も一緒に頑張ろう！");
   const [isGachaModalOpen, setIsGachaModalOpen] = useState(false)
   const [isCharacterDetailModalOpen, setIsCharacterDetailModalOpen] = useState(false)
+  const [isThinking, setIsThinking] = useState(false);
   const editInputRef = useRef<HTMLInputElement>(null)
   const [chatInput, setChatInput] = useState('')
   const [userMessage, setUserMessage] = useState('')
   const [isAnimating, setIsAnimating] = useState(false);
 
+  // アニメーションを開始する関数
   const startAnimation = () => {
     setIsAnimating(true);
     setTimeout(() => setIsAnimating(false), 5000);
   };
 
+  // 新しいTodoを追加する関数
   const addTodo = () => {
     if (newTodo.trim() !== '') {
       setTodos([...todos, { id: Date.now(), text: newTodo, completed: false, isEditing: false, hasAwardedExp: false }])
@@ -489,6 +513,7 @@ export default function GameTodoApp() {
     }
   }
 
+  // Todoの完了状態を切り替える関数
   const toggleTodo = (id: number) => {
     setTodos(todos.map(todo => {
       if (todo.id === id) {
@@ -507,16 +532,19 @@ export default function GameTodoApp() {
     }))
   }
 
+  // Todoを削除する関数
   const deleteTodo = (id: number) => {
     setTodos(todos.filter(todo => todo.id !== id))
   }
 
+  // Todoの編集を開始する関数
   const startEditing = (id: number) => {
     setTodos(todos.map(todo =>
       todo.id === id ? { ...todo, isEditing: true } : { ...todo, isEditing: false }
     ))
   }
 
+  // Todoの編集を停止する関数
   const stopEditing = (id: number, newText?: string) => {
     setTodos(todos.map(todo =>
       todo.id === id
@@ -525,6 +553,7 @@ export default function GameTodoApp() {
     ))
   }
 
+  // 経験値を追加する関数
   const addExp = (amount: number) => {
     setGameState(prev => {
       const newExp = prev.exp + amount
@@ -541,6 +570,7 @@ export default function GameTodoApp() {
     })
   }
 
+  // ガチャストーンを追加する関数
   const addGachaStone = (amount: number) => {
     setGameState(prev => ({
       ...prev,
@@ -548,6 +578,7 @@ export default function GameTodoApp() {
     }))
   }
 
+  // 完了したタスク数を更新する関数
   const updateCompletedTasks = (amount: number) => {
     setGameState(prev => ({
       ...prev,
@@ -555,6 +586,7 @@ export default function GameTodoApp() {
     }))
   }
 
+  // 実績を確認する関数
   const checkAchievements = useCallback(() => {
     setGameState(prev => {
       const updatedAchievements = prev.achievements.map(achievement => {
@@ -568,6 +600,7 @@ export default function GameTodoApp() {
     })
   }, [])
 
+  // 実績を受け取る関数
   const claimAchievement = (achievementId: string) => {
     setGameState(prev => {
       const achievement = prev.achievements.find(a => a.id === achievementId);
@@ -586,10 +619,12 @@ export default function GameTodoApp() {
     });
   };
 
+  // ゲーム状態の変化を監視して実績を確認
   useEffect(() => {
     checkAchievements()
   }, [gameState.level, gameState.completedTasks, gameState.characters.length, checkAchievements])
 
+  // ガチャを引く関数
   const performGacha = () => {
     if (gameState.gachaStones < 5) {
       showCharacterMessage('💎が足りないみたい...\nタスクに取り組もう！')
@@ -616,8 +651,9 @@ export default function GameTodoApp() {
     } else {
       showCharacterMessage(`「${newCharacter.name}」が重複して出現したよ！`)
     }
-}
+  }
 
+  // 現在のキャラクターを変更する関数
   const changeCurrentCharacter = (character: Character) => {
     setGameState(prev => ({
       ...prev,
@@ -628,34 +664,65 @@ export default function GameTodoApp() {
     showCharacterMessage(`よろしくね！\n一緒に頑張ろう！`)
   }
 
+  // キャラクターのメッセージを表示する関数
   const showCharacterMessage = (message: string) => {
     setCharacterMessage(message);
     startAnimation();
   };
 
-  const handleChatSubmit = useCallback((e: React.FormEvent) => {
+  // チャットの送信を処理する関数
+  const handleChatSubmit = useCallback(async (e: React.FormEvent) => {
     e.preventDefault()
-    if (chatInput.trim() !== '') {
-      setUserMessage(chatInput)
-      setChatInput('')
-      startAnimation();
+  if (chatInput.trim() !== '') {
+    setUserMessage(chatInput)
+    setChatInput('')
+    startAnimation();
+    
+    // 考え中状態を表示
+    setIsThinking(true);
+    showCharacterMessage('考え中...');
+    
+    try {
+      const model = genAI.getGenerativeModel({ model: "gemini-pro" });
       
-      setTimeout(() => {
-        const response = `メッセージありがとう！\n${chatInput}だね。`;
-        showCharacterMessage(response);
-      }, 1000)
-    }
-  }, [chatInput, gameState.currentCharacter.name])
+      const prompt = `
+あなたは「${gameState.currentCharacter.name}」というキャラクターです。
+以下の特徴を持つキャラクターとして、ユーザーのメッセージに返答してください：
+- キャラクター説明: ${gameState.currentCharacter.description}
+- フレンドリーで親しみやすい口
+- ポジティブに返答
+- 100文字以内の短い返答
 
+ユーザーのメッセージ: ${chatInput}
+`;
+
+      const result = await model.generateContent(prompt);
+      const response = result.response.text();
+      
+      // 考え中状態を解除して回答を表示
+      setIsThinking(false);
+      showCharacterMessage(response);
+    } catch (error) {
+      console.error('Error generating response:', error);
+      // エラー時も考え中状態を解除
+      setIsThinking(false);
+      showCharacterMessage('ごめんね、上手く聞き取れなかったみたい...😢');
+    }
+  }
+}, [chatInput, gameState.currentCharacter]);
+
+  // Todoリストが変更されたときに編集入力にフォーカスを当てる
   useEffect(() => {
     if (editInputRef.current) {
       editInputRef.current.focus()
     }
   }, [todos])
 
+  // 完了していないTodoと完了したTodoをフィルタリング
   const activeTodos = todos.filter(todo => !todo.completed)
   const completedTodos = todos.filter(todo => todo.completed)
 
+  // ガチャページコンポーネントを定義
   const GachaPage = ({ gameState }: { gameState: GameState }) => (
     <div className="flex flex-col items-center justify-between h-full relative px-4">
       <StatusBar gameState={gameState} />
@@ -700,6 +767,7 @@ export default function GameTodoApp() {
     </div>
   )
 
+  // レポートページコンポーネントを定義
   const ReportPage = ({ gameState, completedTodos }: { gameState: GameState, completedTodos: Todo[] }) => {
     const totalCompletedTasks = completedTodos.length;
     const thisWeekCompletedTasks = completedTodos.filter(todo => {
@@ -730,6 +798,7 @@ export default function GameTodoApp() {
     );
   };
 
+  // 連続達成日数を計算する関数
   const calculateConsecutiveDays = () => {
     if (completedTodos.length === 0) return 0;
 
@@ -758,6 +827,7 @@ export default function GameTodoApp() {
     return consecutiveDays;
   };
 
+  // ナビゲーションバーコンポーネントを定義
   const NavigationBar = () => (
     <div className="flex justify-around items-center bg-background p-2 rounded-lg shadow-md">
       {[
@@ -775,7 +845,7 @@ export default function GameTodoApp() {
               ? 'bg-primary text-primary-foreground shadow-sm' 
               : 'hover:bg-muted'
           }`}
-          onClick={() => setCurrentPage(page)}
+          onClick={() => setCurrentPage(page as 'achievements' | 'character' | 'gacha' | 'characterList' | 'report')}
         >
           <Icon className={`h-6 w-6 mb-1 ${currentPage === page ? 'text-primary-foreground' : 'text-muted-foreground'}`} />
           <span className={`text-xs ${currentPage === page ? 'font-bold' : 'font-medium'}`}>{label}</span>
@@ -784,6 +854,7 @@ export default function GameTodoApp() {
     </div>
   )
 
+  // スタイルを追加するためのエフェクト
   useEffect(() => {
     const style = document.createElement('style');
     const fadeInOutKeyframes = `
@@ -807,10 +878,12 @@ export default function GameTodoApp() {
     };
   }, []);
 
+  // アニメーションを開始するエフェクト
   useEffect(() => {
     startAnimation();
   }, []);
 
+  // アプリのUIをレンダリング
   return (
     <div className="flex flex-col md:flex-row h-screen p-4 bg-background">
       <div className="w-full md:w-1/3 p-4 bg-card rounded-lg shadow-lg mb-4 md:mb-0 md:mr-4 flex flex-col h-[calc(100vh-32px)]">

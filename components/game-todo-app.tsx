@@ -235,7 +235,7 @@ const StatusBar = ({ gameState }: { gameState: GameState }) => (
     </div>
     <div className="flex items-center bg-muted px-2 py-1 rounded-full">
       <span className="text-sm mr-1">💎</span>
-      <span className="text-sm font-semibold">{gameState.gachaStones}</span>
+      <span className="text-lg font-semibold">{gameState.gachaStones}</span>
     </div>
   </div>
 )

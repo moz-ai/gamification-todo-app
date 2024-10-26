@@ -219,7 +219,7 @@ const Modal = ({ isOpen, onClose, children }: { isOpen: boolean; onClose: () => 
   );
 };
 
-// ステータスバーコンポーネントを定義
+// ステータスバーコンポーネント��定義
 const StatusBar = ({ gameState }: { gameState: GameState }) => (
   <div className="w-full flex justify-between items-center mb-4">
     <div className="w-16 h-16 relative">
@@ -494,31 +494,73 @@ export default function GameTodoApp() {
   };
 
   // 新しいTodoを追加する関数
-  const addTodo = () => {
+  const addTodo = async () => {
     if (newTodo.trim() !== '') {
       setTodos([...todos, { id: Date.now(), text: newTodo, completed: false, isEditing: false, hasAwardedExp: false }])
       setNewTodo('')
-      showCharacterMessage('新しいタスクを頑張ろう！')
+      
+      // Gemini APIを使用して応援メッセージを生成
+      try {
+        const response = await generateCharacterResponse(
+          gameState.currentCharacter.name,
+          gameState.currentCharacter.description,
+          `新しいタスク「${newTodo}」が追加されました。このタスクについて応援メッセージをお願いします。`
+        );
+        
+        // APIからの応答がある場合はそれを表示、ない場合はデフォルトメッセージを表示
+        showCharacterMessage(response || '新しいタスクを頑張ろう！');
+      } catch (error) {
+        console.error('Error generating task response:', error);
+        showCharacterMessage('新しいタスクを頑張ろう！');
+      }
+      
       startAnimation();
     }
   }
 
   // Todoの完了状態を切り替える関数
-  const toggleTodo = (id: number) => {
+  const toggleTodo = async (id: number) => {
     setTodos(todos.map(todo => {
       if (todo.id === id) {
         const newCompleted = !todo.completed
         if (newCompleted && !todo.hasAwardedExp) {
+          // 経験値とガチャストーンの付与
           addExp(20)
           addGachaStone(1)
           updateCompletedTasks(1)
-          showCharacterMessage('タスク完了！\nよくがんばったね！')
+          
+          // タスク完了時のメッセージを生成
+          const generateCompletionMessage = async () => {
+            try {
+              const response = await generateCharacterResponse(
+                gameState.currentCharacter.name,
+                gameState.currentCharacter.description,
+                `ユーザーが「${todo.text}」というタスクを完了しました。
+                タスク完了を祝福する励ましのメッセージをお願いします。`
+              );
+              
+              // APIからの応答がある場合はそれを表示、ない場合はデフォルトメッセージを表示
+              showCharacterMessage(response || 'タスク完了！\nやったね！');
+            } catch (error) {
+              console.error('Error generating completion message:', error);
+              showCharacterMessage('タスク完了！\nやったね！');
+            }
+          };
+
+          // メッセージを生成
+          generateCompletionMessage();
+          
+          // アニメーションと紙吹雪エフェクトを開始
           startAnimation()
-          // 紙吹雪エフェクトを開始
           setShowConfetti(true)
-          // 3秒後に紙吹雪を停止
           setTimeout(() => setShowConfetti(false), 3000)
-          return { ...todo, completed: newCompleted, hasAwardedExp: true, completedAt: new Date() }
+          
+          return { 
+            ...todo, 
+            completed: newCompleted, 
+            hasAwardedExp: true, 
+            completedAt: new Date() 
+          }
         }
         return { ...todo, completed: newCompleted }
       }
@@ -1012,11 +1054,11 @@ export default function GameTodoApp() {
             onChange={(e) => setNewTodo(e.target.value)}
             placeholder="新しいタスクを入力..."
             className="mr-2"
-            onKeyDown={(e) => {
+            onKeyDown={async (e) => {
               // 変換中でない場合のみ Enter キーでタスクを追加
               if (e.key === 'Enter' && !isComposingRef.current) {
                 e.preventDefault();
-                addTodo();
+                await addTodo();
               }
             }}
             // 日本語入力の変換開始時と終了時のイベントハンドラを追加
@@ -1027,7 +1069,7 @@ export default function GameTodoApp() {
               isComposingRef.current = false;
             }}
           />
-          <Button onClick={addTodo}>追加</Button>
+          <Button onClick={() => addTodo()}>追加</Button>
         </div>
         <div className="overflow-y-auto flex-grow" style={{ maxHeight: 'calc(100vh - 300px)' }}>
           <Reorder.Group axis="y" values={activeTodos} onReorder={(newOrder) => setTodos([...newOrder, ...completedTodos])}>

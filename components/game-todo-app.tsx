@@ -85,7 +85,7 @@ const initialAchievements: Achievement[] = [
   {
     id: 'task-master-10',
     name: 'タスクマスター初級',
-    description: '10個のタスクを完了する',
+    description: '10��のタスクを完了する',
     condition: (gameState: GameState) => gameState.completedTasks >= 10,
     reward: 20,
     completed: false,
@@ -481,6 +481,7 @@ export default function GameTodoApp() {
   const [chatInput, setChatInput] = useState('')
   const [userMessage, setUserMessage] = useState('')
   const [isAnimating, setIsAnimating] = useState(false);
+  const isComposingRef = useRef(false);
 
   // アニメーションを開始する関数
   const startAnimation = () => {
@@ -632,7 +633,7 @@ export default function GameTodoApp() {
     
     const isNewCharacter = !gameState.characters.some(char => char.id === newCharacter.id)
     if (isNewCharacter) {
-      showCharacterMessage(`新しいキャラ「${newCharacter.name}」を獲得したよ！\nやっ���ね！`)
+      showCharacterMessage(`新しいキャラ「${newCharacter.name}」を獲得したよ！\nやったね！`)
     } else {
       showCharacterMessage(`「${newCharacter.name}」が重複して出現したよ！`)
     }
@@ -687,7 +688,7 @@ export default function GameTodoApp() {
         console.error('Error in chat:', error);
         // エラー時も考え中状態を解除
         setIsThinking(false);
-        showCharacterMessage('ごめんね、上手く聞き取れなかったみたい...😢');
+        showCharacterMessage('ごめんね、上手く聞き取れなかったみたい...');
       }
     }
   }, [chatInput, gameState.currentCharacter, showCharacterMessage]);
@@ -992,7 +993,20 @@ export default function GameTodoApp() {
             onChange={(e) => setNewTodo(e.target.value)}
             placeholder="新しいタスクを入力..."
             className="mr-2"
-            onKeyPress={(e) => e.key === 'Enter' && addTodo()}
+            onKeyDown={(e) => {
+              // 変換中でない場合のみ Enter キーでタスクを追加
+              if (e.key === 'Enter' && !isComposingRef.current) {
+                e.preventDefault();
+                addTodo();
+              }
+            }}
+            // 日本語入力の変換開始時と終了時のイベントハンドラを追加
+            onCompositionStart={() => {
+              isComposingRef.current = true;
+            }}
+            onCompositionEnd={() => {
+              isComposingRef.current = false;
+            }}
           />
           <Button onClick={addTodo}>追加</Button>
         </div>

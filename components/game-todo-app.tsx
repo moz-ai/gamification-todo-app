@@ -4,20 +4,22 @@
 // 必要なReactフックとライブラリをインポート
 import { useState, useRef, useEffect, useCallback, memo } from 'react'
 import { motion, AnimatePresence, Reorder } from 'framer-motion'
-import { Trash2, X, GripVertical, ArrowLeft, Lock, BarChart, Home, Dice5, Users, BarChart2, Send, Trophy } from 'lucide-react'
+import { Trash2, X, GripVertical, Lock, Home, Dice5, Users, BarChart2, Send, Trophy } from 'lucide-react'
 import { Input } from '@/components/ui/input'
 import { Button } from '@/components/ui/button'
 import { Checkbox } from '@/components/ui/checkbox'
 import { Switch } from '@/components/ui/switch'
 import { Label } from '@/components/ui/label'
-import { Textarea } from '@/components/ui/textarea'
 import { CircularProgressbar, buildStyles } from 'react-circular-progressbar';
 import 'react-circular-progressbar/dist/styles.css';
 import { GoogleGenerativeAI } from "@google/generative-ai";
 
-// API関連の定数を追加
-const API_KEY = process.env.NEXT_PUBLIC_GEMINI_API_KEY;
-const genAI = new GoogleGenerativeAI(API_KEY as string);
+// APIキーを設定
+const API_KEY = process.env.NEXT_PUBLIC_GEMINI_API_KEY || '';
+const genAI = new GoogleGenerativeAI(API_KEY);
+
+// モデルを作成
+const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash-002" });
 
 // Todoの型を定義
 interface Todo {
@@ -459,16 +461,6 @@ const AchievementsPage = memo(({ gameState, claimAchievement }: { gameState: Gam
   );
 });
 
-// ランダムなウェルカムメッセージを取得する関数
-const getRandomWelcomeMessage = () => {
-  const messages = [
-    "今日も一緒に頑張ろう！",
-    "今日はどんなタスクに挑戦する？",
-    "一緒に素晴らしい1日にしよう！",
-  ];
-  return messages[Math.floor(Math.random() * messages.length)];
-};
-
 // ゲームTodoアプリのメインコンポーネントを定義
 export default function GameTodoApp() {
   // ステートを定義
@@ -673,19 +665,25 @@ export default function GameTodoApp() {
   // チャットの送信を処理する関数
   const handleChatSubmit = useCallback(async (e: React.FormEvent) => {
     e.preventDefault()
-  if (chatInput.trim() !== '') {
-    setUserMessage(chatInput)
-    setChatInput('')
-    startAnimation();
-    
-    // 考え中状態を表示
-    setIsThinking(true);
-    showCharacterMessage('考え中...');
-    
-    try {
-      const model = genAI.getGenerativeModel({ model: "gemini-pro" });
+    if (chatInput.trim() !== '') {
+      setUserMessage(chatInput)
+      setChatInput('')
+      startAnimation();
       
-      const prompt = `
+      // 考え中状態を表示
+      setIsThinking(true);
+      showCharacterMessage('考え中...');
+      
+      // APIキーが空かどうかをチェック
+      if (API_KEY === '') {
+        // APIキーが空の場合は特定のメッセージを表示
+        setIsThinking(false);
+        showCharacterMessage('メッセージありがとう！');
+        return; // 処理を終了
+      }
+
+      try {
+        const prompt = `
 あなたは「${gameState.currentCharacter.name}」というキャラクターです。
 以下の特徴を持つキャラクターとして、ユーザーのメッセージに返答してください：
 - キャラクター説明: ${gameState.currentCharacter.description}
@@ -696,20 +694,20 @@ export default function GameTodoApp() {
 ユーザーのメッセージ: ${chatInput}
 `;
 
-      const result = await model.generateContent(prompt);
-      const response = result.response.text();
-      
-      // 考え中状態を解除して回答を表示
-      setIsThinking(false);
-      showCharacterMessage(response);
-    } catch (error) {
-      console.error('Error generating response:', error);
-      // エラー時も考え中状態を解除
-      setIsThinking(false);
-      showCharacterMessage('ごめんね、上手く聞き取れなかったみたい...😢');
+        const result = await model.generateContent(prompt);
+        const response = result.response.text();
+        
+        // 考え中状態を解除して回答を表示
+        setIsThinking(false);
+        showCharacterMessage(response);
+      } catch (error) {
+        console.error('Error generating response:', error);
+        // エラー時も考え中状態を解除
+        setIsThinking(false);
+        showCharacterMessage('ごめんね、上手く聞き取れなかったみたい...😢');
+      }
     }
-  }
-}, [chatInput, gameState.currentCharacter]);
+  }, [chatInput, gameState.currentCharacter]);
 
   // Todoリストが変更されたときに編集入力にフォーカスを当てる
   useEffect(() => {

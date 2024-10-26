@@ -13,9 +13,8 @@ import { Label } from '@/components/ui/label'
 import { CircularProgressbar, buildStyles } from 'react-circular-progressbar';
 import 'react-circular-progressbar/dist/styles.css';
 import { generateCharacterResponse } from '@/app/gemini'
-
-// モデルを作成
-// const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash-002" });
+import ReactConfetti from 'react-confetti'
+import { useWindowSize } from 'react-use'
 
 // Todoの型を定義
 interface Todo {
@@ -61,17 +60,80 @@ interface GameState {
 
 // 全キャラクターのリストを定義
 const allCharacters: Character[] = [
-  { id: 'chick', name: 'ひよこ', image: '/images/characters/chick.png', description: 'かわいいひよこです。一生懸命頑張ります！' },
-  { id: 'bear', name: 'クマ', image: '/images/characters/bear.png', description: 'のんびり屋のクマです。ゆっくり確実に物事を進めます。' },
-  { id: 'penguin', name: 'ペンギン', image: '/images/characters/penguin.png', description: '寒さに強いペンギンです。困難にも負けません！' },
-  { id: 'rabbit', name: 'ウサギ', image: '/images/characters/rabbit.png', description: '小さくてかわいいウサギです。素早く動き回ります！' },
-  { id: 'panther', name: 'パンサー', image: '/images/characters/panther.png', description: '強くて勇敢なパンサーです。困難な課題も乗り越えます。' },
-  { id: 'seal', name: 'アザラシ', image: '/images/characters/seal.png', description: 'のんびり屋のアザラシです。ストレスに強く、穏やかに過ごします。' },
-  { id: 'pomeranian', name: 'ポメラニアン', image: '/images/characters/pomeranian.png', description: 'ふわふわで愛らしいポメラニアンです。元気いっぱいで、あなたを励まします！' },
-  { id: 'shimaenaga', name: 'シマエナガ', image: '/images/characters/shimaenaga.png', description: '可愛らしいシマエナガです。小さな体に大きな知恵を持っています。' },
-  { id: 'mike', name: 'ミケ', image: '/images/characters/mike.png', description: '三毛猫のミケです。好奇心旺盛で、あなたの冒険を見守ります。' },
-  { id: 'shiba', name: '柴犬', image: '/images/characters/shiba.png', description: '忠実で勇敢な柴犬です。困難な時もあなたと一緒に乗り越えます。' },
+  { 
+    id: 'chick', 
+    name: 'ひよこ', 
+    image: '/images/characters/chick.png', 
+    description: '明るく純粋な性格の頑張り屋さん。\n「ピヨピヨ！頑張りましょう！」が口癖で、\n初心者に寄り添う優しい心の持ち主です。'
+  },
+  { 
+    id: 'bear', 
+    name: 'しろくま', 
+    image: '/images/characters/bear_hokkyoku.png', 
+    description: '北極からやってきた癒し系のマイペース。\n「あわてず、ゆっくり、確実に」がモットー。\n温厚な性格で周りを和ませる存在です。'
+  },
+  { 
+    id: 'penguin', 
+    name: 'ペンギン', 
+    image: '/images/characters/penguin.png', 
+    description: '几帳面で丁寧な性格の持ち主。\n「整理整頓が大切です！」が信条で、\n物事を論理的に考えるのが得意です。'
+  },
+  { 
+    id: 'rabbit', 
+    name: 'ウサギ', 
+    image: '/images/characters/rabbit.png', 
+    description: '行動力抜群の活発な性格。\n「急ぐときは急ぐ！」がモットーで、\nスピーディーな決断と実行力が魅力です。'
+  },
+  { 
+    id: 'panther', 
+    name: 'パンサー', 
+    image: '/images/characters/panther.png', 
+    description: '強靭な精神力を持つ心の支え役。\n「困難は成長の糧」が信条で、\n困難に立ち向かう勇気を与えてくれます。'
+  },
+  { 
+    id: 'seal', 
+    name: 'ワラビー', 
+    image: '/images/characters/quokka.png', 
+    description: '世界一の笑顔を持つポジティブシンカー。\n「笑顔でハッピーに！」が口癖で、\n周りの人を明るい気持ちにする天性の才能の持ち主。'
+  },
+  { 
+    id: 'pomeranian', 
+    name: 'ポメラニアン', 
+    image: '/images/characters/pomeranian.png', 
+    description: '明るく陽気で人懐っこい性格。\n「できる！やれる！がんばれる！」と\n周りを元気づける、まさに太陽のような存在。'
+  },
+  { 
+    id: 'shimaenaga', 
+    name: 'シマエナガ', 
+    image: '/images/characters/shimaenaga.png', 
+    description: '落ち着いた物腰の北国の知恵者。\n「小さな一歩から大きな変化が生まれます」が信条で、\n穏やかな性格ながら芯の強さを持っています。'
+  },
+  { 
+    id: 'mike', 
+    name: 'ミケ', 
+    image: '/images/characters/mike.png', 
+    description: '好奇心旺盛でいたずら好きな性格。\n「新しいことにチャレンジ！」が大好きで、\n型にはまらない自由な発想の持ち主です。'
+  },
+  { 
+    id: 'shiba', 
+    name: '柴犬', 
+    image: '/images/characters/shiba.png', 
+    description: '忠実で誠実な性格の持ち主。\n「誠実に、まっすぐに」がモットーで、\n信頼関係を大切にする頼もしい存在。'
+  },
+  { 
+    id: 'azarashi', 
+    name: 'アザラシ(レア)', 
+    image: '/images/characters/radio_azarashi.png', 
+    description: '温かみのある声と柔らかな物腰が魅力的。\n「お疲れ様です～♪」が決め台詞。\n誰からも愛される癒し系パーソナリティ。'
+  },
+  { 
+    id: 'obachan', 
+    name: 'おばちゃん(レア)', 
+    image: '/images/characters/osaka_obachan.png', 
+    description: '大阪の人情味あふれるおばちゃん。\n「まあまあ、ぼちぼちやっていこ！」が口癖で、\n面倒見が良く、誰にでも親身になってくれる温かい性格。'
+  },
 ]
+
 
 // 初期実績を定義
 const initialAchievements: Achievement[] = [
@@ -157,16 +219,16 @@ const initialAchievements: Achievement[] = [
     name: 'コレクター見習い',
     description: '5体のキャラクターを集める',
     condition: (gameState: GameState) => gameState.characters.length >= 5,
-    reward: 50,
+    reward: 10,
     completed: false,
     claimed: false
   },
   {
-    id: 'character-collector-all',
-    name: 'マスターコレクター',
-    description: '全てのキャラクターを集める',
-    condition: (gameState: GameState) => gameState.characters.length >= allCharacters.length,
-    reward: 200,
+    id: 'character-collector-10',
+    name: 'ベテランコレクター',
+    description: '10体のキャラクターを集める',
+    condition: (gameState: GameState) => gameState.characters.length >= 10,
+    reward: 20,
     completed: false,
     claimed: false
   },
@@ -177,7 +239,7 @@ const initialAchievements: Achievement[] = [
     name: '初めてのガチャ',
     description: '初めてガチャを引く',
     condition: (gameState: GameState) => gameState.gachaCount >= 1,
-    reward: 10,
+    reward: 5,
     completed: false,
     claimed: false
   },
@@ -191,11 +253,11 @@ const initialAchievements: Achievement[] = [
     claimed: false
   },
   {
-    id: 'gacha-50',
+    id: 'gacha-30',
     name: 'ガチャの王',
-    description: 'ガチャを50回引く',
+    description: 'ガチャを30回引く',
     condition: (gameState: GameState) => gameState.gachaCount >= 50,
-    reward: 150,
+    reward: 100,
     completed: false,
     claimed: false
   }
@@ -220,7 +282,7 @@ const Modal = ({ isOpen, onClose, children }: { isOpen: boolean; onClose: () => 
   );
 };
 
-// ステータスバーコンポーネントを定義
+// ステータスバーコンポーネントの定義
 const StatusBar = ({ gameState }: { gameState: GameState }) => (
   <div className="w-full flex justify-between items-center mb-4">
     <div className="w-16 h-16 relative">
@@ -238,7 +300,7 @@ const StatusBar = ({ gameState }: { gameState: GameState }) => (
     </div>
     <div className="flex items-center bg-muted px-2 py-1 rounded-full">
       <span className="text-sm mr-1">💎</span>
-      <span className="text-sm font-semibold">{gameState.gachaStones}</span>
+      <span className="text-lg font-semibold">{gameState.gachaStones}</span>
     </div>
   </div>
 )
@@ -329,7 +391,7 @@ const CharacterListPage = memo(({
       <StatusBar gameState={gameState} />
       <div className="w-full text-right mb-4">
         <p className="text-sm font-medium">
-          コンプリート率：{completionRate}%</p>
+          コンプリート率{completionRate}%</p>
       </div>
       <div className="flex-grow flex flex-col items-center w-full max-w-md overflow-hidden">
         <div className="grid grid-cols-2 gap-4 w-full h-[calc(100vh-200px)] overflow-y-auto px-4">
@@ -371,13 +433,12 @@ const CharacterListPage = memo(({
           {selectedCharacter && (
             <div className="flex flex-col items-center">
               <img
-                
                 src={selectedCharacter.image}
                 alt={`${selectedCharacter.name}キャラクター`}
                 className="w-24 h-24 object-contain mb-2"
               />
               <h3 className="text-lg font-semibold mb-1">{selectedCharacter.name}</h3>
-              <p className="text-xs text-muted-foreground mb-2 text-center">
+              <p className="text-xs text-muted-foreground mb-2 text-center whitespace-pre-line">
                 {selectedCharacter.description}
               </p>
               <Button
@@ -484,6 +545,9 @@ export default function GameTodoApp() {
   const [chatInput, setChatInput] = useState('')
   const [userMessage, setUserMessage] = useState('')
   const [isAnimating, setIsAnimating] = useState(false);
+  const isComposingRef = useRef(false);
+  const [showConfetti, setShowConfetti] = useState(false)
+  const { width, height } = useWindowSize()
 
   // アニメーションを開始する関数
   const startAnimation = () => {
@@ -491,18 +555,33 @@ export default function GameTodoApp() {
     setTimeout(() => setIsAnimating(false), 5000);
   };
 
-  // 新しいTodoを追加する関数
-  const addTodo = () => {
+  // 新しいTodoを追加する関数を修正
+  const addTodo = async () => {
     if (newTodo.trim() !== '') {
       setTodos([...todos, { id: Date.now(), text: newTodo, completed: false, isEditing: false, hasAwardedExp: false }])
       setNewTodo('')
-      showCharacterMessage('新しいタスクを頑張ろう！')
+      
+      // 考え中メッセージを表示
+      showCharacterMessage('考え中...');
       startAnimation();
+      
+      try {
+        const response = await generateCharacterResponse(
+          gameState.currentCharacter.name,
+          gameState.currentCharacter.description,
+          `新しいタスク「${newTodo}」が追加されました。このタスクについて応援メッセージをお願いします。`
+        );
+        
+        showCharacterMessage(response || '新しいタスクを頑張ろう！');
+      } catch (error) {
+        console.error('Error generating task response:', error);
+        showCharacterMessage('新しいタスクを頑張ろう！');
+      }
     }
   }
 
-  // Todoの完了状態を切り替える関数
-  const toggleTodo = (id: number) => {
+  // Todoの完了状態を切り替える関数を修正
+  const toggleTodo = async (id: number) => {
     setTodos(todos.map(todo => {
       if (todo.id === id) {
         const newCompleted = !todo.completed
@@ -510,9 +589,41 @@ export default function GameTodoApp() {
           addExp(20)
           addGachaStone(1)
           updateCompletedTasks(1)
-          showCharacterMessage('タスク完了！\nよくがんばったね！')
+          
+          // 考え中メッセージを表示
+          showCharacterMessage('考え中...');
           startAnimation();
-          return { ...todo, completed: newCompleted, hasAwardedExp: true, completedAt: new Date() }
+          
+          // タスク完了時のメッセージを生成
+          const generateCompletionMessage = async () => {
+            try {
+              const response = await generateCharacterResponse(
+                gameState.currentCharacter.name,
+                gameState.currentCharacter.description,
+                `ユーザーが「${todo.text}」というタスクを完了しました。
+                タスク完了を祝福する励ましのメッセージをお願いします。`
+              );
+              
+              showCharacterMessage(response || 'タスク完了！\nやったね！');
+            } catch (error) {
+              console.error('Error generating completion message:', error);
+              showCharacterMessage('タスク完了！\nやったね！');
+            }
+          };
+
+          // メッセージを生成
+          generateCompletionMessage();
+          
+          // アニメーションと紙吹雪エフェクトを開始
+          setShowConfetti(true)
+          setTimeout(() => setShowConfetti(false), 3000)
+          
+          return { 
+            ...todo, 
+            completed: newCompleted, 
+            hasAwardedExp: true, 
+            completedAt: new Date() 
+          }
         }
         return { ...todo, completed: newCompleted }
       }
@@ -574,29 +685,33 @@ export default function GameTodoApp() {
     }))
   }
 
-  // 実績を確認する関数
+  // 実績を確認する関数を修正
   const checkAchievements = useCallback(() => {
     setGameState(prev => {
       const updatedAchievements = prev.achievements.map(achievement => {
         if (!achievement.completed && achievement.condition(prev)) {
-          showCharacterMessage(`実績解除したよ！\n実績ページで💎を受け取ろう！`)
-          return { ...achievement, completed: true }
+          // 実績が解除されたので、完了状態を更新
+          return { ...achievement, completed: true };
         }
-        return achievement
-      })
-      return { ...prev, achievements: updatedAchievements }
-    })
-  }, [])
+        return achievement;
+      });
+
+      return {
+        ...prev,
+        achievements: updatedAchievements
+      };
+    });
+  }, []);
 
   // 実績を受け取る関数
   const claimAchievement = (achievementId: string) => {
     setGameState(prev => {
       const achievement = prev.achievements.find(a => a.id === achievementId);
       if (achievement && achievement.completed && !achievement.claimed) {
+        // 実績報酬を受け取る処理
         const updatedAchievements = prev.achievements.map(a => 
           a.id === achievementId ? { ...a, claimed: true } : a
         );
-        showCharacterMessage(`実績報酬で💎を${achievement.reward}個獲得したよ！\nやったね！`);
         return {
           ...prev,
           gachaStones: prev.gachaStones + achievement.reward,
@@ -614,43 +729,61 @@ export default function GameTodoApp() {
 
   // ガチャを引く関数
   const performGacha = () => {
+    // ガチャ石が5未満の場合は処理を終了
     if (gameState.gachaStones < 5) {
-      showCharacterMessage('💎が足りないみたい...\nタスクに取り組もう！')
-      return
+      return; // キャラクターの発言を削除
     }
 
+    // ゲーム状態を更新してガチャ石を減らし、ガチャの回数を増やす
     setGameState(prev => ({
       ...prev,
       gachaStones: prev.gachaStones - 5,
       gachaCount: prev.gachaCount + 1
-    }))
+    }));
 
-    const newCharacter = allCharacters[Math.floor(Math.random() * allCharacters.length)]
+    // ランダムに新しいキャラクターを選ぶ
+    const newCharacter = allCharacters[Math.floor(Math.random() * allCharacters.length)];
+    // ゲーム状態を更新して新しいキャラクターを追加
     setGameState(prev => ({
       ...prev,
       characters: [...prev.characters, newCharacter],
-    }))
-    setSelectedCharacter(newCharacter)
-    setIsGachaModalOpen(true)
+    }));
+    setSelectedCharacter(newCharacter);
+    setIsGachaModalOpen(true);
     
-    const isNewCharacter = !gameState.characters.some(char => char.id === newCharacter.id)
-    if (isNewCharacter) {
-      showCharacterMessage(`新しいキャラ「${newCharacter.name}」を獲得したよ！\nやっ���ね！`)
-    } else {
-      showCharacterMessage(`「${newCharacter.name}」が重複して出現したよ！`)
-    }
+    // 新しいキャラクターが初めての場合の処理
+    const isNewCharacter = !gameState.characters.some(char => char.id === newCharacter.id);
+    // キャラクターの発言を削除
   }
 
   // 現在のキャラクターを変更する関数
-  const changeCurrentCharacter = (character: Character) => {
+  const changeCurrentCharacter = async (character: Character) => {
+    setCharacterMessage('');
+    
     setGameState(prev => ({
       ...prev,
       currentCharacter: character,
-    }))
-    setCurrentPage('character')
-    setIsCharacterDetailModalOpen(false)
-    showCharacterMessage(`よろしくね！\n一緒に頑張ろう！`)
-  }
+    }));
+    setCurrentPage('character');
+    setIsCharacterDetailModalOpen(false);
+
+    setTimeout(async () => {
+      setCharacterMessage('考え中...');
+      try {
+        const response = await generateCharacterResponse(
+          character.name,
+          character.description,
+          `あなたは今選ばれました。ユーザーへの最初の挨拶メッセージをお願いします。`
+        );
+        
+        // レスポンスが null の場合はデフォルトメッセージを表示
+        showCharacterMessage(response ?? `${character.name}だよ！\nよろしくね！`);
+      } catch (error) {
+        console.error('Error generating character change message:', error);
+        showCharacterMessage(`${character.name}だよ！\nよろしくね！`);
+      }
+    }, 100);
+  };
 
   // キャラクターのメッセージを表示する関数
   const showCharacterMessage = (message: string) => {
@@ -666,31 +799,23 @@ export default function GameTodoApp() {
       setChatInput('')
       startAnimation();
       
-      // 考え中状態を表示
       setIsThinking(true);
       showCharacterMessage('考え中...');
       
       try {
-        // APIキーが設定されているか確認
         const response = await generateCharacterResponse(
           gameState.currentCharacter.name,
           gameState.currentCharacter.description,
           chatInput
         );
         
-        // 考え中状態を解除して回答を表示
         setIsThinking(false);
-        // レスポンスが空文字列の場合（APIキーが設定されていない場合）
-        if (response === '') {
-          showCharacterMessage('メッセージありがとう！');
-        } else {
-          showCharacterMessage(response);
-        }
+        // レスポンスが null の場合はデフォルトメッセージを表示
+        showCharacterMessage(response ?? 'メッセージありがとう！');
       } catch (error) {
         console.error('Error in chat:', error);
-        // エラー時も考え中状態を解除
         setIsThinking(false);
-        showCharacterMessage('ごめんね、上手く聞き取れなかったみたい...😢');
+        showCharacterMessage('ごめんね、上手く聞き取れなかったみたい...');
       }
     }
   }, [chatInput, gameState.currentCharacter, showCharacterMessage]);
@@ -729,8 +854,9 @@ export default function GameTodoApp() {
         100% { transform: scale(1); opacity: 1; }
       }
       @keyframes sparkle {
-        0%, 100% { opacity: 0; }
-        50% { opacity: 1; }
+        0% { transform: scale(0); opacity: 0; }
+        50% { transform: scale(1); opacity: 1; }
+        100% { transform: scale(0); opacity: 0; }
       }
     `;
     style.innerHTML = animations + `
@@ -745,11 +871,12 @@ export default function GameTodoApp() {
       }
       .sparkle {
         position: absolute;
-        width: 10px;
-        height: 10px;
-        background: gold;
+        width: 20px; // サイズを大きく
+        height: 20px; // サイズを大きく
+        background: radial-gradient(circle, #ffd700 0%, transparent 70%);
         border-radius: 50%;
-        animation: sparkle 0.5s ease-in-out infinite;
+        pointer-events: none;
+        animation: sparkle 1s ease-in-out infinite;
       }
     `;
     document.head.appendChild(style);
@@ -761,13 +888,11 @@ export default function GameTodoApp() {
   // ガチャページコンポーネントを更新
   const GachaPage = ({ gameState }: { gameState: GameState }) => {
     const [isShaking, setIsShaking] = useState(false);
-    const [showSparkles, setShowSparkles] = useState(false);
     const [showPopAnimation, setShowPopAnimation] = useState(false);
 
     // ガチャを引く処理を更新
     const handleGacha = async () => {
       if (gameState.gachaStones < 5) {
-        showCharacterMessage('💎が足りないみたい...\nタスクに取り組もう！');
         return;
       }
 
@@ -777,36 +902,14 @@ export default function GameTodoApp() {
       await new Promise(resolve => setTimeout(resolve, 2000));
       
       setIsShaking(false);
-      setShowSparkles(true);
-      
       performGacha();
-      setShowPopAnimation(true); // 新しいキャラクター表示時にアニメーションを有効化
-      
-      setTimeout(() => {
-        setShowSparkles(false);
-      }, 1000);
+      setShowPopAnimation(true);
     };
 
     return (
       <div className="flex flex-col items-center justify-between h-full relative px-4">
         <StatusBar gameState={gameState} />
         <div className="flex-grow flex flex-col items-center justify-center relative">
-          {/* キラキラエフェクト */}
-          {showSparkles && (
-            <>
-              {[...Array(10)].map((_, i) => (
-                <div
-                  key={i}
-                  className="sparkle"
-                  style={{
-                    left: `${Math.random() * 100}%`,
-                    top: `${Math.random() * 100}%`,
-                    animationDelay: `${Math.random() * 0.5}s`
-                  }}
-                />
-              ))}
-            </>
-          )}
           <img
             src="images/gacha/gachagacha.png"
             alt="ガチャガチャマシン"
@@ -831,7 +934,7 @@ export default function GameTodoApp() {
                 className="w-24 h-24 object-contain mb-2"
               />
               <h3 className="text-lg font-semibold mb-1">{selectedCharacter.name}</h3>
-              <p className="text-xs text-muted-foreground mb-2 text-center">
+              <p className="text-xs text-muted-foreground mb-2 text-center whitespace-pre-line">
                 {selectedCharacter.description}
               </p>
               <Button
@@ -839,7 +942,6 @@ export default function GameTodoApp() {
                 onClick={() => {
                   changeCurrentCharacter(selectedCharacter)
                   setIsGachaModalOpen(false)
-                  // モーダルを閉じる時にアニメーション状態をリセット
                   setShowPopAnimation(false)
                 }}
               >
@@ -947,6 +1049,17 @@ export default function GameTodoApp() {
   // アプリのUIをレンダリング
   return (
     <div className="flex flex-col md:flex-row h-screen p-4 bg-background">
+      {showConfetti && (
+        <ReactConfetti
+          width={width}
+          height={height}
+          recycle={false}
+          numberOfPieces={200}
+          gravity={0.3}
+          initialVelocityY={20}
+          colors={['#FFD700', '#FF6B6B', '#4ECDC4', '#45B7D1', '#96CEB4']}
+        />
+      )}
       <div className="w-full md:w-1/3 p-4 bg-card rounded-lg shadow-lg mb-4 md:mb-0 md:mr-4 flex flex-col h-[calc(100vh-32px)]">
         <div className="flex-grow overflow-hidden relative mb-4">
           {currentPage === 'character' && (
@@ -995,9 +1108,22 @@ export default function GameTodoApp() {
             onChange={(e) => setNewTodo(e.target.value)}
             placeholder="新しいタスクを入力..."
             className="mr-2"
-            onKeyPress={(e) => e.key === 'Enter' && addTodo()}
+            onKeyDown={async (e) => {
+              // 変換中でない場合のみ Enter キーでタスクを追加
+              if (e.key === 'Enter' && !isComposingRef.current) {
+                e.preventDefault();
+                await addTodo();
+              }
+            }}
+            // 日本語入力の変換開始時と終了時のイベントハンドラを追加
+            onCompositionStart={() => {
+              isComposingRef.current = true;
+            }}
+            onCompositionEnd={() => {
+              isComposingRef.current = false;
+            }}
           />
-          <Button onClick={addTodo}>追加</Button>
+          <Button onClick={() => addTodo()}>追加</Button>
         </div>
         <div className="overflow-y-auto flex-grow" style={{ maxHeight: 'calc(100vh - 300px)' }}>
           <Reorder.Group axis="y" values={activeTodos} onReorder={(newOrder) => setTodos([...newOrder, ...completedTodos])}>

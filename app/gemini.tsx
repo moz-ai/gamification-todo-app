@@ -10,10 +10,11 @@ export async function generateCharacterResponse(
   characterName: string,
   characterDescription: string,
   userMessage: string
-): Promise<string> {
+): Promise<string | null> {
+  // APIキーが設定されていない場合は null を返す
   if (!API_KEY) {
     console.warn('GEMINI_API_KEY is not defined in environment variables');
-    return 'メッセージありがとう！'; // デフォルトの応答を返す
+    return null;
   }
 
   try {
@@ -39,6 +40,6 @@ export async function generateCharacterResponse(
     return response.text();
   } catch (error) {
     console.error('Error generating response:', error);
-    return 'ごめんね、上手く応答できなかったみたい...😢';
+    return null;
   }
 }

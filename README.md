@@ -48,7 +48,7 @@ npm install
 3. 環境変数の設定:
 `.env.local`ファイルを作成し、必要な環境変数を設定:
 ```
-GOOGLE_API_KEY=your_gemini_api_key
+GEMINI_API_KEY=your_gemini_api_key
 ```
 
 4. 開発サーバーの起動:

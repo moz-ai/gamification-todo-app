@@ -2,7 +2,7 @@
 
 import { GoogleGenerativeAI } from "@google/generative-ai";
 
-// NEXT_PUBLIC_ プレフィックスを外す
+// APIキーを取得
 const API_KEY = process.env.GEMINI_API_KEY || '';
 
 // APIキーが設定されていない場合は、デフォルトの応答を返す関数を作成
@@ -11,9 +11,8 @@ export async function generateCharacterResponse(
   characterDescription: string,
   userMessage: string
 ): Promise<string | null> {
-  // APIキーが設定されていない場合は null を返す
-  if (!API_KEY) {
-    console.warn('GEMINI_API_KEY is not defined in environment variables');
+  // APIキーが未設定の場合は静かにnullを返す
+  if (!API_KEY || API_KEY === '') {
     return null;
   }
 
@@ -39,7 +38,7 @@ export async function generateCharacterResponse(
     const response = result.response;
     return response.text();
   } catch (error) {
-    console.error('Error generating response:', error);
+    console.error('Error in Gemini API:', error);
     return null;
   }
 }

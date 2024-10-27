@@ -538,7 +538,7 @@ export default function GameTodoApp() {
     expToNextLevel: 100,
     characters: [allCharacters[0]],
     currentCharacter: allCharacters[0],
-    gachaStones: 1000,
+    gachaStones: 100,
     completedTasks: 0,
     achievements: initialAchievements,
     gachaCount: 0,

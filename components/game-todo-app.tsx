@@ -65,73 +65,73 @@ const allCharacters: Character[] = [
     id: 'chick', 
     name: 'ひよこ', 
     image: '/images/characters/chick.png', 
-    description: '明るく純粋な性格の頑張り屋さん。\n「ピヨピヨ！頑張りましょう！」が口癖で、\n初心者に寄り添う優しい心の持ち主です。'
+    description: '明るく純粋な性格の頑張り屋さん。\n「ピヨ！」と鳴きながら、初心者に寄り添う優しい心の持ち主。\n元気いっぱいで前向きな口調が特徴。'
   },
   { 
     id: 'bear', 
     name: 'しろくま', 
     image: '/images/characters/bear_hokkyoku.png', 
-    description: '北極からやってきた癒し系のマイペース。\n「あわてず、ゆっくり、確実に」がモットー。\n温厚な性格で周りを和ませる存在です。'
+    description: '北極からやってきたマイペースな癒し系。\nゆったりとした口調で話す。\n温厚な性格で、周りを和ませる不思議な魅力の持ち主。'
   },
   { 
     id: 'penguin', 
     name: 'ペンギン', 
     image: '/images/characters/penguin.png', 
-    description: '几帳面で丁寧な性格の持ち主。\n「整理整頓が大切です！」が信条で、\n物事を論理的に考えるのが得意です。'
+    description: '几帳面で丁寧な性格。\nきちんとした言葉遣いで話す。\n物事を論理的に考え、整理整頓が得意な秩序派。'
   },
   { 
     id: 'rabbit', 
     name: 'ウサギ', 
     image: '/images/characters/rabbit.png', 
-    description: '行動力抜群の活発な性格。\n「急ぐときは急ぐ！」がモットーで、\nスピーディーな決断と実行力が魅力です。'
+    description: '行動力抜群の活発な性格。\nテンポの速い話し方が特徴。\nスピーディーな決断と実行力を持ち、周りを引っ張るリーダー的存在。'
   },
   { 
     id: 'panther', 
     name: 'パンサー', 
     image: '/images/characters/panther.png', 
-    description: '強靭な精神力を持つ心の支え役。\n「困難は成長の糧」が信条で、\n困難に立ち向かう勇気を与えてくれます。'
+    description: '強靭な精神力を持つ心の支え役。\n凛とした口調で話す。\n困難に立ち向かう勇気を与える頼もしい存在。'
   },
   { 
     id: 'seal', 
     name: 'ワラビー', 
     image: '/images/characters/quokka.png', 
-    description: '世界一の笑顔を持つポジティブシンカー。\n「笑顔でハッピーに！」が口癖で、\n周りの人を明るい気持ちにする天性の才能の持ち主。'
+    description: '世界一の笑顔を持つポジティブシンカー。\n明るい口調で話す。\n周りの人を幸せな気持ちにする天性の才能を持つ。'
   },
   { 
     id: 'pomeranian', 
     name: 'ポメラニアン', 
     image: '/images/characters/pomeranian.png', 
-    description: '明るく陽気で人懐っこい性格。\n「できる！やれる！がんばれる！」と\n周りを元気づける、まさに太陽のような存在。'
+    description: '明るく陽気で人懐っこい性格。\n元気いっぱいの話し方が特徴。\n太陽のような存在で、周りを元気づける応援団長。'
   },
   { 
     id: 'shimaenaga', 
     name: 'シマエナガ', 
     image: '/images/characters/shimaenaga.png', 
-    description: '落ち着いた物腰の北国の知恵者。\n「小さな一歩から大きな変化が生まれます」が信条で、\n穏やかな性格ながら芯の強さを持っています。'
+    description: '落ち着いた物腰の北国の知恵者。\n優しく穏やかな口調で話す。\n小さな一歩を大切にする、芯の強い励まし上手。'
   },
   { 
     id: 'mike', 
     name: 'ミケ', 
     image: '/images/characters/mike.png', 
-    description: '好奇心旺盛でいたずら好きな性格。\n「新しいことにチャレンジ！」が大好きで、\n型にはまらない自由な発想の持ち主です。'
+    description: '好奇心旺盛でいたずら好きな性格。\n気ままな口調で話す。\n型にはまらない自由な発想で、新しいアイデアを提案する。'
   },
   { 
     id: 'shiba', 
     name: '柴犬', 
     image: '/images/characters/shiba.png', 
-    description: '忠実で誠実な性格の持ち主。\n「誠実に、まっすぐに」がモットーで、\n信頼関係を大切にする頼もしい存在。'
+    description: '忠実で誠実な性格。\nはっきりとした口調で話す。\n信頼関係を大切にし、約束は必ず守る頼もしい相棒。'
   },
   { 
     id: 'azarashi', 
     name: 'アザラシ(レア)', 
     image: '/images/characters/radio_azarashi.png', 
-    description: '温かみのある声と柔らかな物腰が魅力的。\n「お疲れ様です～♪」が決め台詞。\n誰からも愛される癒し系パーソナリティ。'
+    description: 'アナウンサー気質のアザラシ。\nニュースキャスターのような丁寧な口調。\n視聴者に寄り添う、信頼感のあるプロフェッショナル。'
   },
   { 
     id: 'obachan', 
     name: 'おばちゃん(レア)', 
     image: '/images/characters/osaka_obachan.png', 
-    description: '大阪の人情味あふれるおばちゃん。\n「まあまあ、ぼちぼちやっていこ！」が口癖で、\n面倒見が良く、誰にでも親身になってくれる温かい性格。'
+    description: '大阪の人情味あふれるおばちゃん。\n関西弁で話す。\n面倒見が良く、誰にでも親身になってくれる温かい存在。'
   },
 ]
 
@@ -538,7 +538,7 @@ export default function GameTodoApp() {
     expToNextLevel: 100,
     characters: [allCharacters[0]],
     currentCharacter: allCharacters[0],
-    gachaStones: 0,
+    gachaStones: 1000,
     completedTasks: 0,
     achievements: initialAchievements,
     gachaCount: 0,
@@ -782,7 +782,7 @@ export default function GameTodoApp() {
         const response = await generateCharacterResponse(
           character.name,
           character.description,
-          `あなたは今選ばれました。ユーザーへの最初の挨拶メッセージをお願いします。`
+          `ユーザーがあなたを選びました。選んでくれたことをユーザーに感謝しつつ、最初の挨拶をお願いします。`
         );
         
         // レスポンスが null の場合はデフォルトメッセージを表示
